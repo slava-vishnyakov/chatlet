@@ -116,19 +116,20 @@ def test_require_json():
     assert "colors" in response
 
 def test_error_handling():
-    chat = Chatette()
+    chat = Chatette(model="nonexistent/model")
     with pytest.raises(ChatetteError):
-        chat("This should fail", model="nonexistent/model")
+        chat("This should fail")
 
 def test_stream_cancellation():
     chat = Chatette()
-    stream = chat("Tell me a very long story.", stream=True)
+    stream = chat("Tell me a story in 50 words.", stream=True)
     chunks = []
     for i, chunk in enumerate(stream):
         chunks.append(chunk)
         if i == 5:
-            stream.cancel()
-            break
+            chat.cancel()
+        if i > 7:
+            assert False
     assert len(chunks) <= 6
 
 @responses.activate

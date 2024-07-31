@@ -141,9 +141,13 @@ class Chatette:
         if 'provider_preferences' in kwargs:
             payload['provider'] = kwargs['provider_preferences']
 
-        print(f"Sending request to OpenRouter API: {payload}")
-        response = requests.post(f"{self.base_url}/chat/completions", headers=self.headers, json=payload, stream=kwargs.get('stream', False))
-        print(f"Received response from OpenRouter API: {response.text}")
+        is_stream = kwargs.get('stream', False)
+        # print(f"Sending request to OpenRouter API [stream={is_stream}]: {payload}\n----------------")
+        response = requests.post(f"{self.base_url}/chat/completions", headers=self.headers, json=payload, stream=is_stream)
+        # if is_stream:
+        #     print(f"Receiving stream from OpenRouter API...\n----------------")
+        # else:
+        #     print(f"Received response from OpenRouter API: {response.text}\n----------------")
 
         if response.status_code == 502:
             raise ChatetteError("OpenRouter API is currently unavailable. Please try again later.")
@@ -151,7 +155,7 @@ class Chatette:
         if response.status_code != 200:
             raise ChatetteError(f"API request failed with status code {response.status_code}: {response.text}")
 
-        if kwargs.get('stream', False):
+        if is_stream:
             return self._handle_streaming(response)
         else:
             data = response.json()
@@ -262,4 +266,5 @@ class Chatette:
                 raise ChatetteError(f"Unexpected response from OpenRouter API: {line}")
 
     def cancel(self):
+        print('cancel')
         self._cancel_streaming = True
