@@ -12,7 +12,7 @@ from debug import print_user_message, print_assistant_message, print_system_mess
 
 def test_init():
     chat = Chatette()
-    assert chat.model == "anthropic/claude-3-opus"
+    assert chat.model == "anthropic/claude-3.5-sonnet"
     
     custom_chat = Chatette(model="openai/gpt-3.5-turbo")
     assert custom_chat.model == "openai/gpt-3.5-turbo"

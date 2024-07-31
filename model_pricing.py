@@ -12,11 +12,15 @@ MODEL_PRICING["anthropic/claude-3-sonnet"] = {
     "image_price_per_thousand": 4.8,  # $4.8 per thousand images
 }
 
-MODEL_PRICING["anthropic/claude-3.5-sonnet:beta"] = {
+MODEL_PRICING["anthropic/claude-3-sonnet:beta"] = MODEL_PRICING["anthropic/claude-3-sonnet"]
+
+MODEL_PRICING["anthropic/claude-3.5-sonnet"] = {
     "input_price_per_token": 0.000003,  # $3 per million tokens
     "output_price_per_token": 0.000015,  # $15 per million tokens
     "image_price_per_thousand": 4.8,  # $4.8 per thousand images
 }
+
+MODEL_PRICING["anthropic/claude-3.5-sonnet:beta"] = MODEL_PRICING["anthropic/claude-3.5-sonnet"]
 
 MODEL_PRICING["openai/gpt-4o-mini"] = {
     "input_price_per_token": 0.00000015,  # $0.15 per million tokens
