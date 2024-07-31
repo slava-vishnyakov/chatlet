@@ -85,10 +85,17 @@ def test_tool_usage():
         return {"temperature": 22, "unit": unit, "condition": "Sunny"}
 
     chat = Chatette()
-    response = chat("What's the weather like in location='New York City, NY'? Don't ask follow-up questions.", tools=[get_weather])
+    response = chat("What's the weather like in location='New York City, NY'? Don't think, don't ask follow-up questions.", tools=[get_weather])
+    assert 'New York' in response
     assert chat.tool_called == "get_weather"
     assert chat.tool_args == {"location": "New York City, NY"}
     assert chat.tool_result == {"temperature": 22, "unit": "celsius", "condition": "Sunny"}
+
+    response2 = chat('Thank you!')
+    assert 'New York' in response2
+    assert chat.tool_called is None
+    assert chat.tool_args is None
+    assert chat.tool_result is None
 
 def test_token_usage():
     chat = Chatette()

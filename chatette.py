@@ -100,12 +100,25 @@ class Chatette:
     def addAssistant(self, content: str):
         self.conversation_history.append({"role": "assistant", "content": content})
 
-    def __call__(self, message: str, **kwargs):
+    def addToolUse(self, tool_name: str, arguments: dict, result: any):
+        tool_description = f"Tool '{tool_name}' was called with arguments: {arguments}. It returned: {result}"
+        self.conversation_history.append({"role": "function", "name": tool_name, "content": tool_description})
+
+    def _prepare_messages(self):
         messages = self.conversation_history.copy()
         if self.system_prompt:
             messages.insert(0, {"role": "system", "content": self.system_prompt})
+        
+        # Change "function" roles to "assistant" for API compatibility
+        for message in messages:
+            if message["role"] == "function":
+                message["role"] = "assistant"
+        
+        return messages
+
+    def __call__(self, message: str, **kwargs):
         self.addUser(message)
-        messages = self.conversation_history.copy()
+        messages = self._prepare_messages()
 
         payload = {
             "model": self.model,
@@ -127,8 +140,13 @@ class Chatette:
         if 'provider_preferences' in kwargs:
             payload['provider'] = kwargs['provider_preferences']
 
+        # print(f"Sending request to OpenRouter API: {payload}")
         response = requests.post(f"{self.base_url}/chat/completions", headers=self.headers, json=payload, stream=kwargs.get('stream', False))
-        
+        # print(f"Received response from OpenRouter API: {response.text}")
+
+        if response.status_code == 502:
+            raise ChatetteError("OpenRouter API is currently unavailable. Please try again later.")
+
         if response.status_code != 200:
             raise ChatetteError(f"API request failed with status code {response.status_code}: {response.text}")
 
@@ -136,14 +154,35 @@ class Chatette:
             return self._handle_streaming(response)
         else:
             data = response.json()
-            # possible error here: {'error': {'message': '{"type":"error","error":{"type":"invalid_request_error","message":"messages.0.content.1.image.source.base64.data: The image was specified using the image/jpeg media type, but does not appear to be a valid jpeg image"}}
             if 'error' in data:
                 raise ChatetteError(f"API request failed with error: {data['error']}")
             self._update_token_count(data['usage'])
-            content = data['choices'][0]['message']['content']
-            # USE THE TOOL HERE, set self.tool_called = name, self.tool_args = args, self.tool_result = result
-            # example data={'object': 'chat.completion', 'created': 1722430011, 'choices': [{'index': 0, 'message': {'role': 'assistant', 'content': "<thinking>\nThe get_weather tool is relevant to answer this request. It requires two parameters:\nlocation (required): The user provided this as 'New York City, NY'\nunit (optional): The user did not specify a unit. Since it's optional, we don't need to ask for it and can proceed with the default.\n</thinking>", 'tool_calls': [{'id': 'toolu_01AnzKE572pFPwessNLyhSeg', 'type': 'function', 'function': {'name': 'get_weather', 'arguments': '{"location":"New York City, NY"}'}}]}, 'finish_reason': 'tool_calls'}], ...
+            message = data['choices'][0]['message']
+            content = message['content']
+
+            self.tool_called = None
+            self.tool_args = None
+            self.tool_result = None
+            if 'tool_calls' in message:
+                self._handle_tool_calls(message['tool_calls'], kwargs.get('tools', []))
+
             return json.loads(content) if kwargs.get('require_json') else content
+
+    def _handle_tool_calls(self, tool_calls, available_tools):
+        for tool_call in tool_calls:
+            if tool_call['type'] == 'function':
+                function = tool_call['function']
+                self.tool_called = function['name']
+                self.tool_args = json.loads(function['arguments'])
+                
+                tool_func = next((func for func in available_tools if func.__name__ == self.tool_called), None)
+                if tool_func:
+                    self.tool_result = tool_func(**self.tool_args)
+                else:
+                    self.tool_result = None
+                    print(f"Warning: Tool '{self.tool_called}' was called but not found in the provided tools.")
+
+                self.addToolUse(self.tool_called, self.tool_args, self.tool_result)
 
     def _prepare_image_content(self, message: str, image_files: List[str]) -> List[Dict]:
         content = [{"type": "text", "text": message}]
