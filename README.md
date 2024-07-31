@@ -24,10 +24,13 @@ chat('What\'s your name?')
 
 - Easy-to-use interface for the OpenRouter API
 - Support for multiple AI models
-- **Streaming** responses
-- **Tool** usage
-- **Image** input support
-- Conversation history management
+- [**Streaming** responses](#streaming-response)
+- [**Tool** usage](#using-tools)
+- [**Image** input support](#image-input)
+- [Adding URLs to context](#url-context)
+- [Conversation history management](#adding-conversation-history)
+- [Cost estimation](#cost-estimation)
+- 
 
 ## Why Chatlet?
 
@@ -129,7 +132,9 @@ chat("What's the weather like in New York City?", tools=[get_weather])
 Force a specific tool using `tool_choice`:
 
 ```python
-chat("What's the weather like in New York City?", tools=[get_weather], tool_choice="get_weather")
+chat("What's the weather like in New York City?", 
+     tools=[get_weather], 
+     tool_choice="get_weather")
 ```
 
 You can customize the behavior of Chatlet by passing additional parameters:
@@ -276,46 +281,23 @@ print(response)
 
 ```python
 chat = Chatlet()
-response = chat("Hello", provider_order=["OpenAI", "Anthropic"], provider_allow_fallbacks=False)
+response = chat("Hello",
+                model="meta-llama/llama-3.1-8b-instruct",
+                provider_order=["DeepInfra", "Lepton", "Together"],
+                provider_allow_fallbacks=False
+                )
 print(response)
 ```
 
 ### Available Providers
 
-Chatlet supports a wide range of AI providers through OpenRouter. As of the last update, the available providers include:
+As of the last update, the available providers include:
 
-1. OpenAI
-2. Anthropic
-3. HuggingFace
-4. Google
-5. Together
-6. DeepInfra
-7. Azure
-8. Modal
-9. AnyScale
-10. Replicate
-11. Perplexity
-12. Recursal
-13. Fireworks
-14. Mistral
-15. Groq
-16. Cohere
-17. Lepton
-18. OctoAI
-19. Novita
-20. DeepSeek
-21. Infermatic
-22. AI21
-23. Featherless
-24. Mancer
-25. Mancer 2
-26. Lynn 2
-27. Lynn
+`OpenAI`, `Anthropic`, `HuggingFace`, `Google`, `Together`, `DeepInfra`, `Azure`, `Modal`, `AnyScale`, 
+`Replicate`, `Perplexity`, `Recursal`, `Fireworks`, `Mistral`, `Groq`, `Cohere`, `Lepton`, `OctoAI`, 
+`Novita`, `DeepSeek`, `Infermatic`, `AI21`, `Featherless`, `Mancer`, `Mancer 2`, `Lynn 2`, `Lynn`
 
 Please note that the availability of providers may change over time. For the most up-to-date list, refer to the OpenRouter documentation.
-
-These examples showcase the versatility and power of Chatlet. For more detailed information on each feature, please
-refer to the API Reference section.
 
 ## API Reference
 
