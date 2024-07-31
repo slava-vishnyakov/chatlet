@@ -1,4 +1,7 @@
+import os
+
 import pytest
+import requests
 import responses
 from chatette import Chatette, ChatetteError
 import base64
@@ -54,12 +57,24 @@ def test_stream_response():
 def test_image_input():
     chat = Chatette()
     image_filename = "test_image.jpg"
-    with open(image_filename, "wb") as f:
-        f.write(base64.b64decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg=="))
-    
-    response = chat("What's in this image?", images=[image_filename])
+    if not os.path.exists(image_filename):
+        data = requests.get("https://api-ninjas.com/images/cats/abyssinian.jpg").content
+        with open(image_filename, "wb") as f:
+            f.write(data)
+
+    response = chat("What's in this image? (in 10 words or less)", images=[image_filename])
     assert isinstance(response, str)
     assert len(response) > 0
+    assert "cat" in response.lower()
+    print_token_usage(chat.total_tokens, chat.prompt_tokens, chat.completion_tokens)
+
+def test_estimate_pricing():
+    chat = Chatette()
+    response = chat("Hello, how are you?")
+    assert isinstance(response, str)
+    print(f'\nEstimated cost: ${chat.total_usd:.6f}, last request: ${chat.last_request_usd:.6f}')
+    assert chat.total_usd > 0
+    assert chat.last_request_usd > 0
 
 def test_tool_usage():
     def get_weather(

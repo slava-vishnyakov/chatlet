@@ -9,6 +9,8 @@ class ChatetteError(Exception):
     pass
 
 class Chatette:
+    _cancel_streaming: bool = False
+
     def __init__(self, model: str = "anthropic/claude-3-opus", system_prompt: str = None,
                  http_referer: str = None, x_title: str = None):
         self.model = model
@@ -20,6 +22,9 @@ class Chatette:
         self.total_tokens = 0
         self.prompt_tokens = 0
         self.completion_tokens = 0
+        self.image_count = 0
+        self.total_usd = 0
+        self.last_request_usd = 0
         self.headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
@@ -91,22 +96,25 @@ class Chatette:
         if 'provider_preferences' in kwargs:
             payload['provider'] = kwargs['provider_preferences']
 
-        response = requests.post(f"{self.base_url}/chat/completions", headers=self.headers, json=payload)
+        response = requests.post(f"{self.base_url}/chat/completions", headers=self.headers, json=payload, stream=kwargs.get('stream', False))
         
         if response.status_code != 200:
             raise ChatetteError(f"API request failed with status code {response.status_code}: {response.text}")
 
-        data = response.json()
-        self._update_token_count(data['usage'])
-        
         if kwargs.get('stream', False):
             return self._handle_streaming(response)
         else:
+            data = response.json()
+            # possible error here: {'error': {'message': '{"type":"error","error":{"type":"invalid_request_error","message":"messages.0.content.1.image.source.base64.data: The image was specified using the image/jpeg media type, but does not appear to be a valid jpeg image"}}
+            if 'error' in data:
+                raise ChatetteError(f"API request failed with error: {data['error']}")
+            self._update_token_count(data['usage'])
             content = data['choices'][0]['message']['content']
             return json.loads(content) if kwargs.get('require_json') else content
 
     def _prepare_image_content(self, message: str, image_files: List[str]) -> List[Dict]:
         content = [{"type": "text", "text": message}]
+        self.image_count = 0  # Reset image count for this request
         for image_file in image_files:
             with open(image_file, "rb") as img:
                 base64_image = base64.b64encode(img.read()).decode('utf-8')
@@ -114,6 +122,7 @@ class Chatette:
                     "type": "image_url",
                     "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}
                 })
+            self.image_count += 1  # Increment image count
         return content
 
     def _fetch_url_contents(self, urls: List[str]) -> str:
@@ -130,17 +139,39 @@ class Chatette:
         self.prompt_tokens += usage['prompt_tokens']
         self.completion_tokens += usage['completion_tokens']
         self.total_tokens += usage['total_tokens']
+        self._estimate_price()
+
+    def _estimate_price(self):
+        # Pricing for Claude 3.5 Sonnet
+        input_price_per_token = 0.000003  # $3 per million tokens
+        output_price_per_token = 0.000015  # $15 per million tokens
+        image_price_per_thousand = 4.8  # $4.8 per thousand images
+
+        input_cost = self.prompt_tokens * input_price_per_token
+        output_cost = self.completion_tokens * output_price_per_token
+        
+        # Assuming we store the number of images used in self.image_count
+        image_cost = (self.image_count / 1000) * image_price_per_thousand if hasattr(self, 'image_count') else 0
+
+        self.last_request_usd = input_cost + output_cost + image_cost
+        self.total_usd += self.last_request_usd
 
     def _handle_streaming(self, response):
+        self._cancel_streaming = False
         for line in response.iter_lines():
-            if line:
+            if self._cancel_streaming:
+                break
+            line = line.decode('utf-8')
+            if line.startswith('data: '):
                 try:
-                    data = json.loads(line.decode('utf-8').split('data: ')[1])
+                    data = json.loads(line.split('data: ')[1])
                     yield data['choices'][0]['delta'].get('content', '')
                 except json.JSONDecodeError:
                     continue
+            elif line == ': OPENROUTER PROCESSING' or line == '':
+                continue
+            else:
+                raise ChatetteError(f"Unexpected response from OpenRouter API: {line}")
 
     def cancel(self):
-        # This method should be called from another thread to cancel an ongoing streaming request
-        # In a real implementation, you'd use something like requests.Session() to manage connections
-        pass
+        self._cancel_streaming = True
