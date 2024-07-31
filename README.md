@@ -249,9 +249,9 @@ print(response)
 
 ```python
 chat = Chatette()
-chat.addUser("What's the capital of France?")
-chat.addAssistant("The capital of France is Paris.")
-chat.addUser("What's its population?")
+chat.add_user("What's the capital of France?")
+chat.add_assistant("The capital of France is Paris.")
+chat.add_user("What's its population?")
 response = chat("Summarize our conversation.")
 print(response)
 ```
@@ -336,15 +336,15 @@ Fetches the rate limits and credits for the API key.
 
 Fetches the token limits for the available models.
 
-#### `addUser(self, content: str)`
+#### `add_user(self, content: str)`
 
 Adds a user message to the conversation history.
 
-#### `addAssistant(self, content: str)`
+#### `add_assistant(self, content: str)`
 
 Adds an assistant message to the conversation history.
 
-#### `addToolUse(self, tool_name: str, arguments: dict, result: any)`
+#### `add_tool_use(self, tool_name: str, arguments: dict, result: any)`
 
 Adds a tool usage entry to the conversation history.
 

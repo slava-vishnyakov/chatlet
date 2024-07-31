@@ -108,13 +108,13 @@ class Chatette:
         else:
             return "string"  # Default to string for unknown types
 
-    def addUser(self, content: str):
+    def add_user(self, content: str):
         self.conversation_history.append({"role": "user", "content": content})
 
-    def addAssistant(self, content: str):
+    def add_assistant(self, content: str):
         self.conversation_history.append({"role": "assistant", "content": content})
 
-    def addToolUse(self, tool_name: str, arguments: dict, result: any):
+    def add_tool_use(self, tool_name: str, arguments: dict, result: any):
         tool_description = f"Tool '{tool_name}' was called with arguments: {arguments}. It returned: {result}"
         self.conversation_history.append({"role": "function", "name": tool_name, "content": tool_description})
 
