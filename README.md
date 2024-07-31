@@ -1,17 +1,35 @@
 # Chatlet
 
-Chatlet is a powerful and flexible chatbot framework designed to work seamlessly with OpenRouter, supporting a wide
-range of models. Chatlet aims to provide an easy-to-use interface for building and managing conversational AI applications.
+Chatlet is a Python wrapper for the OpenRouter API, providing an easy-to-use interface for interacting with various AI models.
+Inspired by [Claudette](https://claudette.answer.ai/), which supports only Anthropic Claude.
+
+## Usage
+
+Here's a quick example of how to use Chatlet:
+
+```python
+from chatlet import Chatlet
+
+# Initialize the Chatlet client
+chat = Chatlet(api_key="your_api_key_here")
+
+# Send a message and get a response
+response = chat("Hello, how are you?")
+print(response)
+```
+
+## Features
+
+- Easy-to-use interface for the OpenRouter API
+- Support for multiple AI models
+- Streaming responses
+- Tool usage
+- Image input support
+- Conversation history management
 
 ## Why Chatlet?
 
 Chatlet is designed to be versatile and can work with any model supported by OpenRouter.
-
-## Features
-
-- **Model Agnostic**: Supports any model available on OpenRouter.
-- **Easy Integration**: Simple API for integrating with your applications.
-- **Cost Estimation**: Built-in cost estimation for API usage for some popular models.
 
 ## Getting Started
 
@@ -357,34 +375,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Acknowledgements
 
 Special thanks to the creators of [Claudette](https://claudette.answer.ai/) for the inspiration.
-# Chatlet
-
-Chatlet is a Python wrapper for the OpenRouter API, providing an easy-to-use interface for interacting with various AI models.
-
-## Usage
-
-Here's a quick example of how to use Chatlet:
-
-```python
-from chatlet import Chatlet
-
-# Initialize the Chatlet client
-chat = Chatlet(api_key="your_api_key_here")
-
-# Send a message and get a response
-response = chat("Hello, how are you?")
-print(response)
-```
-
-## Features
-
-- Easy-to-use interface for the OpenRouter API
-- Support for multiple AI models
-- Streaming responses
-- Tool usage
-- Image input support
-- Conversation history management
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
