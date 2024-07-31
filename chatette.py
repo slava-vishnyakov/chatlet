@@ -16,11 +16,11 @@ class Chatette:
     _cancel_streaming: bool = False
 
     def __init__(self, model: str = "anthropic/claude-3.5-sonnet", system_prompt: str = None,
-                 http_referer: str = None, x_title: str = None):
+                 http_referer: str = None, x_title: str = None, api_key: str = None):
         self.debug = False
         self.model = model
         self.system_prompt = system_prompt
-        self.api_key = self._get_api_key()
+        self.api_key = api_key if api_key else self._get_api_key()
         self.base_url = "https://openrouter.ai/api/v1"
         self.conversation_history = []
         self.total_tokens = 0
@@ -54,7 +54,7 @@ class Chatette:
         load_dotenv()
         api_key = os.getenv('OPENROUTER_API_KEY')
         if not api_key:
-            raise ChatetteError("OPENROUTER_API_KEY not found in .env file")
+            raise ChatetteError("OPENROUTER_API_KEY not found in .env file or not provided as a parameter")
         return api_key
 
     def _create_tool(self, func: Callable):

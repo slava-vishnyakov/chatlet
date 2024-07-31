@@ -6,16 +6,14 @@ interface for building and managing conversational AI applications.
 
 ## Why Chatette?
 
-While Claudette is a great tool, it is specifically tailored for a particular use case. Chatette, on the other hand, is
-designed to be more versatile and can work with any model supported by OpenRouter. This makes it an ideal choice for
-developers looking for flexibility and ease of integration.
+While Claudette is a great tool, it is specifically tailored for a particular use case (Anthropic's Claude). Chatette, on the other hand, is
+designed to be more versatile and can work with any model supported by OpenRouter. 
 
 ## Features
 
 - **Model Agnostic**: Supports any model available on OpenRouter.
 - **Easy Integration**: Simple API for integrating with your applications.
-- **Extensible**: Easily add custom tools and functionalities.
-- **Cost Estimation**: Built-in cost estimation for API usage.
+- **Cost Estimation**: Built-in cost estimation for API usage for some popular models.
 
 ## Getting Started
 
@@ -29,14 +27,6 @@ cd chatette
 pip install -r requirements.txt
 ```
 
-### Configuration
-
-Create a `.env` file in the root directory of your project and add your OpenRouter API key:
-
-```
-OPENROUTER_API_KEY=your_api_key_here
-```
-
 ### Basic Usage
 
 Here's a simple example to get you started:
@@ -45,14 +35,86 @@ Here's a simple example to get you started:
 from chatette import Chatette
 
 # Initialize Chatette with the desired model
-chat = Chatette(model="anthropic/claude-3.5-sonnet")
+chat = Chatette() 
+```
 
-# Send a message to the chatbot
+This loads API key from OPENROUTER_API_KEY environment variable or .env file.
+The default model is `anthropic/claude-3.5-sonnet`.
+
+Or, if you want to provide the model and API key directly:
+
+```python
+chat = Chatette(model="anthropic/claude-3.5-sonnet", api_key="your_api_key_here")
+```
+
+You can then send a message to the chatbot:
+
+```python
 response = chat("Hello, how are you?")
 print(response)
 ```
 
-### Advanced Usage
+> `I'm doing well, thank you! How can I assist you today?`
+
+You can then continue the chat by calling the `chat` function again with a new message:
+
+```python
+response = chat("What's your name?")
+print(response)
+```
+
+> `My name is Claude.`
+
+All history is stored:
+
+```python
+chat.conversation_history
+```
+
+```json
+[
+    {
+        "role": "user",
+        "content": "Hello, how are you?"
+    },
+    {
+        "role": "assistant",
+        "content": "I'm doing great, thank you!"
+    },
+    {
+        "role": "user",
+        "content": "What's your name?"
+    },
+    {
+        "role": "assistant",
+        "content": "My name is Chatette."
+    }
+]
+```
+
+You can also add images:
+
+```python
+chat("What's in this image?", images=["path/to/image.jpg"])
+```
+
+Or add tools using [docments](https://fastcore.fast.ai/docments.html#docments) (note the comments, this is `docments`, they will be sent to the model):
+
+```python
+def get_weather(
+        location: str, # The location to get the weather for.
+        unit: str = "celsius" # The unit to return the temperature in.
+    ) -> dict: # Get the current weather in a given location.
+    return {"temperature": 22, "unit": unit, "condition": "Sunny"}
+
+chat("What's the weather like in New York City?", tools=[get_weather])
+```
+
+Force a specific tool using `tool_choice`:
+
+```python
+chat("What's the weather like in New York City?", tools=[get_weather], tool_choice="get_weather")
+```
 
 You can customize the behavior of Chatette by passing additional parameters:
 
@@ -61,57 +123,27 @@ response = chat("Tell me a story", temperature=0.7, max_tokens=100)
 print(response)
 ```
 
-## API Reference
+Some other parameters you can use: `stream`, `images`, `urls`, `require_json`, `provider_order`, 
+`provider_allow_fallbacks`.
 
-### Chatette Class
+Streaming example:
 
-#### `__init__(self, model: str = "anthropic/claude-3.5-sonnet", system_prompt: str = None, http_referer: str = None, x_title: str = None)`
+```python
+stream = chat("Tell me a story in 10 words.", stream=True)
+for chunk in stream:
+    print(chunk, end='', flush=True)
+print()  # New line after streaming
+```
 
-- **model**: The model to use for the chatbot.
-- **system_prompt**: An optional system prompt to set the context for the conversation.
-- **http_referer**: Optional HTTP referer header.
-- **x_title**: Optional X-Title header.
+And add some URLs:
 
-#### `__call__(self, message: str, **kwargs)`
-
-- **message**: The message to send to the chatbot.
-- **kwargs**: Additional parameters to customize the request.
-
-#### `get_rate_limits_and_credits(self)`
-
-Fetches the rate limits and credits for the API key.
-
-#### `get_token_limits(self)`
-
-Fetches the token limits for the available models.
-
-#### `addUser(self, content: str)`
-
-Adds a user message to the conversation history.
-
-#### `addAssistant(self, content: str)`
-
-Adds an assistant message to the conversation history.
-
-#### `addToolUse(self, tool_name: str, arguments: dict, result: any)`
-
-Adds a tool usage entry to the conversation history.
-
-#### `cancel(self)`
-
-Cancels an ongoing streaming request.
-
-## Contributing
-
-We welcome contributions! Please read our [contributing guidelines](CONTRIBUTING.md) for more details.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+```python
+chat("Summarize the article I provided", urls=["https://example.com/article"])
+```
 
 ## Examples
 
-Here are some important examples of how to use Chatette based on our test suite:
+Here are some important examples of how to use Chatette:
 
 ### Basic Usage
 
@@ -238,20 +270,95 @@ Chatette supports a wide range of AI providers through OpenRouter. As of the las
 
 1. OpenAI
 2. Anthropic
-3. Google
-4. Meta
-5. Mistral AI
-6. Cohere
-7. AI21
-8. Anyscale
-9. Perplexity AI
+3. HuggingFace
+4. Google
+5. Together
+6. DeepInfra
+7. Azure
+8. Modal
+9. AnyScale
 10. Replicate
-11. OpenRouter
+11. Perplexity
+12. Recursal
+13. Fireworks
+14. Mistral
+15. Groq
+16. Cohere
+17. Lepton
+18. OctoAI
+19. Novita
+20. DeepSeek
+21. Infermatic
+22. AI21
+23. Featherless
+24. Mancer
+25. Mancer 2
+26. Lynn 2
+27. Lynn
 
 Please note that the availability of providers may change over time. For the most up-to-date list, refer to the OpenRouter documentation.
 
 These examples showcase the versatility and power of Chatette. For more detailed information on each feature, please
 refer to the API Reference section.
+
+## API Reference
+
+### Chatette Class
+
+#### `__init__(self, model: str = "anthropic/claude-3.5-sonnet", system_prompt: str = None, http_referer: str = None, x_title: str = None, api_key: str = None)`
+
+- **model**: The model to use for the chatbot.
+- **system_prompt**: An optional system prompt to set the context for the conversation.
+- **http_referer**: Optional HTTP referer header.
+- **x_title**: Optional X-Title header.
+- **api_key**: Optional API key. If not provided, it will be loaded from the environment variable or .env file.
+
+#### `__call__(self, message: str, **kwargs)`
+
+- **message**: The message to send to the chatbot.
+- **kwargs**: Additional parameters to customize the request. These can include:
+  - **stream**: Boolean to enable streaming responses.
+  - **temperature**: Float to control randomness in the response.
+  - **max_tokens**: Integer to limit the response length.
+  - **tools**: List of function objects to be used as tools.
+  - **tool_choice**: String to specify which tool to use.
+  - **images**: List of image file paths to include in the message.
+  - **urls**: List of URLs to fetch content from.
+  - **require_json**: Boolean to request JSON output.
+  - **provider_order**: List of provider names to specify the order of providers to try.
+  - **provider_allow_fallbacks**: Boolean to allow fallbacks to other providers.
+
+#### `get_rate_limits_and_credits(self)`
+
+Fetches the rate limits and credits for the API key.
+
+#### `get_token_limits(self)`
+
+Fetches the token limits for the available models.
+
+#### `addUser(self, content: str)`
+
+Adds a user message to the conversation history.
+
+#### `addAssistant(self, content: str)`
+
+Adds an assistant message to the conversation history.
+
+#### `addToolUse(self, tool_name: str, arguments: dict, result: any)`
+
+Adds a tool usage entry to the conversation history.
+
+#### `cancel(self)`
+
+Cancels an ongoing streaming request.
+
+## Contributing
+
+We welcome contributions! Please read our [contributing guidelines](CONTRIBUTING.md) for more details.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgements
 
