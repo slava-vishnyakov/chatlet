@@ -3,3 +3,4 @@ responses
 pytest
 python-dotenv
 colorama
+fastcore

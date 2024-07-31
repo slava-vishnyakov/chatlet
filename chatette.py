@@ -3,8 +3,10 @@ import json
 from typing import List, Dict, Union, Optional, Callable
 import base64
 import os
+import inspect
 from dotenv import load_dotenv
 from model_pricing import get_model_pricing
+from fastcore.docments import docments
 
 class ChatetteError(Exception):
     pass
@@ -12,14 +14,13 @@ class ChatetteError(Exception):
 class Chatette:
     _cancel_streaming: bool = False
 
-    def __init__(self, model: str = "anthropic/claude-3-opus", system_prompt: str = None,
+    def __init__(self, model: str = "anthropic/claude-3.5-sonnet", system_prompt: str = None,
                  http_referer: str = None, x_title: str = None):
         self.model = model
         self.system_prompt = system_prompt
         self.api_key = self._get_api_key()
         self.base_url = "https://openrouter.ai/api/v1"
         self.conversation_history = []
-        self.tools = []
         self.total_tokens = 0
         self.prompt_tokens = 0
         self.completion_tokens = 0
@@ -42,12 +43,13 @@ class Chatette:
             raise ChatetteError("OPENROUTER_API_KEY not found in .env file")
         return api_key
 
-    def add_tool(self, func: Callable):
+    def _create_tool(self, func: Callable):
+        doc = docments(func, full=True)
         tool = {
             "type": "function",
             "function": {
                 "name": func.__name__,
-                "description": func.__doc__,
+                "description": func.__doc__.strip() if func.__doc__ else "",
                 "parameters": {
                     "type": "object",
                     "properties": {},
@@ -55,14 +57,42 @@ class Chatette:
                 }
             }
         }
-        # Parse the function's type hints and docstring to populate the parameters
-        # This is a simplified version and might need to be more robust in a real implementation
-        for param_name, param_type in func.__annotations__.items():
-            if param_name != 'return':
-                tool['function']['parameters']['properties'][param_name] = {"type": param_type.__name__}
-                tool['function']['parameters']['required'].append(param_name)
         
-        self.tools.append(tool)
+        for param_name, param_info in doc.items():
+            if param_name != 'return':
+                param_type = self._get_json_schema_type(param_info.anno)
+                tool['function']['parameters']['properties'][param_name] = {
+                    "type": param_type,
+                    "description": param_info.docment
+                }
+                if param_info.default == inspect._empty:
+                    tool['function']['parameters']['required'].append(param_name)
+        
+        if 'return' in doc:
+            tool['function']['returns'] = {
+                "type": self._get_json_schema_type(doc['return'].anno),
+                "description": doc['return'].docment
+            }
+        
+        return tool
+
+    def _get_json_schema_type(self, anno):
+        if anno == inspect._empty:
+            return "string"
+        elif anno == str:
+            return "string"
+        elif anno == int:
+            return "integer"
+        elif anno == float:
+            return "number"
+        elif anno == bool:
+            return "boolean"
+        elif anno == dict:
+            return "object"
+        elif anno == list:
+            return "array"
+        else:
+            return "string"  # Default to string for unknown types
 
     def addUser(self, content: str):
         self.conversation_history.append({"role": "user", "content": content})
@@ -92,8 +122,8 @@ class Chatette:
             payload['messages'][-1]['content'] = self._prepare_image_content(message, kwargs['images'])
         if 'urls' in kwargs:
             payload['messages'][-1]['content'] += "\n\n" + self._fetch_url_contents(kwargs['urls'])
-        if self.tools:
-            payload['tools'] = self.tools
+        if 'tools' in kwargs:
+            payload['tools'] = [self._create_tool(func) for func in kwargs['tools']]
         if 'provider_preferences' in kwargs:
             payload['provider'] = kwargs['provider_preferences']
 
@@ -111,6 +141,8 @@ class Chatette:
                 raise ChatetteError(f"API request failed with error: {data['error']}")
             self._update_token_count(data['usage'])
             content = data['choices'][0]['message']['content']
+            # USE THE TOOL HERE, set self.tool_called = name, self.tool_args = args, self.tool_result = result
+            # example data={'object': 'chat.completion', 'created': 1722430011, 'choices': [{'index': 0, 'message': {'role': 'assistant', 'content': "<thinking>\nThe get_weather tool is relevant to answer this request. It requires two parameters:\nlocation (required): The user provided this as 'New York City, NY'\nunit (optional): The user did not specify a unit. Since it's optional, we don't need to ask for it and can proceed with the default.\n</thinking>", 'tool_calls': [{'id': 'toolu_01AnzKE572pFPwessNLyhSeg', 'type': 'function', 'function': {'name': 'get_weather', 'arguments': '{"location":"New York City, NY"}'}}]}, 'finish_reason': 'tool_calls'}], ...
             return json.loads(content) if kwargs.get('require_json') else content
 
     def _prepare_image_content(self, message: str, image_files: List[str]) -> List[Dict]:
