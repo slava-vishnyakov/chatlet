@@ -3,6 +3,9 @@ import responses
 from chatette import Chatette, ChatetteError
 import base64
 import json
+from debug import print_user_message, print_assistant_message, print_system_message, print_token_usage, \
+    print_streaming_token, print_new_line
+
 
 def test_init():
     chat = Chatette()
@@ -13,19 +16,38 @@ def test_init():
 
 def test_send_message():
     chat = Chatette()
+    print_new_line()
+    print_user_message("Hello, how are you?")
     response = chat("Hello, how are you?")
+    print_assistant_message(response)
+    print_token_usage(chat.total_tokens, chat.prompt_tokens, chat.completion_tokens)
     assert isinstance(response, str)
     assert len(response) > 0
 
 def test_system_prompt():
-    chat = Chatette(system_prompt="You are a helpful assistant.")
-    response = chat("What's your purpose?")
-    assert "helpful assistant" in response.lower()
+    system_prompt = "You are a helpful assistant named Claude. Your favorite color is blue."
+    print("\n", end="")
+    print_system_message(system_prompt)
+    chat = Chatette(system_prompt=system_prompt)
+    print_user_message("What's your name and favorite color?")
+    response = chat("What's your name and favorite color?")
+    print_assistant_message(response)
+    print_token_usage(chat.total_tokens, chat.prompt_tokens, chat.completion_tokens)
+    assert "Claude" in response
+    assert "blue" in response.lower()
 
 def test_stream_response():
     chat = Chatette()
-    stream = chat("Tell me a story.", stream=True)
-    chunks = list(stream)
+    print("\n", end="")
+    print_user_message("Tell me a story in 10 words.")
+    stream = chat("Tell me a story in 10 words.", stream=True)
+    chunks = []
+    for chunk in stream:
+        print_streaming_token(chunk)
+        chunks.append(chunk)
+    print()  # New line after streaming
+    print("\n", end="")
+    print_token_usage(chat.total_tokens, chat.prompt_tokens, chat.completion_tokens)
     assert len(chunks) > 1
     assert isinstance(chunks[0], str)
 

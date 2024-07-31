@@ -2,3 +2,4 @@ requests
 responses
 pytest
 python-dotenv
+colorama
