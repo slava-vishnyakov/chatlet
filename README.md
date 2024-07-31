@@ -14,17 +14,21 @@ from chatlet import Chatlet
 chat = Chatlet(api_key="your_api_key_here")
 
 # Send a message and get a response
-response = chat("Hello, how are you?")
-print(response)
+
+chat("Hello, how are you?")
+# I'm doing well, thank you!
+
+chat('What\'s your name?')
+# My name is Claude.
 ```
 
 ## Features
 
 - Easy-to-use interface for the OpenRouter API
 - Support for multiple AI models
-- Streaming responses
-- Tool usage
-- Image input support
+- **Streaming** responses
+- **Tool** usage
+- **Image** input support
 - Conversation history management
 
 ## Why Chatlet?
@@ -49,12 +53,10 @@ Here's a simple example to get you started:
 
 ```python
 from chatlet import Chatlet
-
-# Initialize Chatlet with the desired model
 chat = Chatlet() 
 ```
 
-This loads API key from OPENROUTER_API_KEY environment variable or .env file.
+This loads API key from `OPENROUTER_API_KEY` environment variable or .env file.
 The default model is `anthropic/claude-3.5-sonnet`.
 
 Or, if you want to provide the model and API key directly:
