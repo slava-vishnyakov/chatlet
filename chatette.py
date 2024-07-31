@@ -4,6 +4,7 @@ from typing import List, Dict, Union, Optional, Callable
 import base64
 import os
 from dotenv import load_dotenv
+from model_pricing import get_model_pricing
 
 class ChatetteError(Exception):
     pass
@@ -142,16 +143,12 @@ class Chatette:
         self._estimate_price()
 
     def _estimate_price(self):
-        # Pricing for Claude 3.5 Sonnet
-        input_price_per_token = 0.000003  # $3 per million tokens
-        output_price_per_token = 0.000015  # $15 per million tokens
-        image_price_per_thousand = 4.8  # $4.8 per thousand images
+        pricing = get_model_pricing(self.model)
 
-        input_cost = self.prompt_tokens * input_price_per_token
-        output_cost = self.completion_tokens * output_price_per_token
+        input_cost = self.prompt_tokens * pricing['input_price_per_token']
+        output_cost = self.completion_tokens * pricing['output_price_per_token']
         
-        # Assuming we store the number of images used in self.image_count
-        image_cost = (self.image_count / 1000) * image_price_per_thousand if hasattr(self, 'image_count') else 0
+        image_cost = (self.image_count / 1000) * pricing['image_price_per_thousand'] if hasattr(self, 'image_count') else 0
 
         self.last_request_usd = input_cost + output_cost + image_cost
         self.total_usd += self.last_request_usd
