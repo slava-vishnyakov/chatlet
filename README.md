@@ -24,13 +24,12 @@ chat('What\'s your name?')
 
 - Easy-to-use interface for the OpenRouter API
 - Support for multiple AI models
-- [**Streaming** responses](#streaming-response)
-- [**Tool** usage](#using-tools)
-- [**Image** input support](#image-input)
+- [Streaming responses](#streaming-response)
+- [Tool usage](#using-tools)
+- [Image input support](#image-input)
 - [Adding URLs to context](#url-context)
 - [Conversation history management](#adding-conversation-history)
 - [Cost estimation](#cost-estimation)
-- 
 
 ## Why Chatlet?
 
