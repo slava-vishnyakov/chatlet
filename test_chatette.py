@@ -17,15 +17,24 @@ def test_init():
     custom_chat = Chatette(model="openai/gpt-3.5-turbo")
     assert custom_chat.model == "openai/gpt-3.5-turbo"
 
-def test_send_message():
+def test_get_rate_limits_and_credits():
     chat = Chatette()
-    print_new_line()
-    print_user_message("Hello, how are you?")
-    response = chat("Hello, how are you?")
-    print_assistant_message(response)
-    print_token_usage(chat.total_tokens, chat.prompt_tokens, chat.completion_tokens)
-    assert isinstance(response, str)
-    assert len(response) > 0
+    response = chat.get_rate_limits_and_credits()
+    print(response)
+    assert 'data' in response
+    assert 'usage' in response['data']
+    assert 'limit' in response['data']
+    assert 'rate_limit' in response['data']
+
+def test_get_token_limits():
+    chat = Chatette()
+    response = chat.get_token_limits()
+    assert 'data' in response
+    assert isinstance(response['data'], list)
+    assert 'id' in response['data'][0]
+    assert 'per_request_limits' in response['data'][0]
+    assert 'prompt_tokens' in response['data'][0]['per_request_limits']
+    assert 'completion_tokens' in response['data'][0]['per_request_limits']
 
 def test_system_prompt():
     system_prompt = "You are a helpful assistant named Claude. Your favorite color is blue."

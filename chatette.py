@@ -38,7 +38,19 @@ class Chatette:
         if x_title:
             self.headers["X-Title"] = x_title
 
-    def _get_api_key(self):        
+    def get_rate_limits_and_credits(self):
+        response = requests.get(f"{self.base_url}/auth/key", headers=self.headers)
+        if response.status_code != 200:
+            raise ChatetteError(f"API request failed with status code {response.status_code}: {response.text}")
+        return response.json()
+
+    def get_token_limits(self):
+        response = requests.get(f"{self.base_url}/models", headers=self.headers)
+        if response.status_code != 200:
+            raise ChatetteError(f"API request failed with status code {response.status_code}: {response.text}")
+        return response.json()
+
+    def _get_api_key(self):
         load_dotenv()
         api_key = os.getenv('OPENROUTER_API_KEY')
         if not api_key:
