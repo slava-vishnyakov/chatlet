@@ -47,6 +47,8 @@ cd chatlet
 pip install -r requirements.txt
 ```
 
+[!] pip coming soon
+
 ### Basic Usage
 
 Here's a simple example to get you started:
