@@ -191,9 +191,14 @@ def test_tool_choice():
     assert chat.tool_args == {"location": "New York"}
     assert chat.tool_result == {"temperature": 22, "condition": "Sunny"}
 
-def test_provider_preferences():
+def test_provider_order_and_fallbacks():
     chat = Chatette()
-    response = chat("Hello", provider_preferences={"openai": {"weight": 1}, "anthropic": {"weight": 2}})
+    # expect this to fail because Anthropic is not in the provider_order
+    with pytest.raises(ChatetteError):
+        response = chat("Hello", provider_order=["OpenAI", "Together"], provider_allow_fallbacks=False)
+
+    response = chat("Hello", provider_order=["OpenAI", "Anthropic"], provider_allow_fallbacks=False)
+
     assert isinstance(response, str)
 
 def test_add_conversation_history():

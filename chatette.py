@@ -141,8 +141,15 @@ class Chatette:
             payload['messages'][-1]['content'] += "\n\n" + self._fetch_url_contents(kwargs['urls'])
         if 'tools' in kwargs:
             payload['tools'] = [self._create_tool(func) for func in kwargs['tools']]
-        if 'provider_preferences' in kwargs:
-            payload['provider'] = kwargs['provider_preferences']
+        # Valid providers: OpenAI, Anthropic, HuggingFace, Google, Together, DeepInfra, Azure, Modal, AnyScale,
+        # Replicate, Perplexity, Recursal, Fireworks, Mistral, Groq, Cohere, Lepton, OctoAI, Novita, DeepSeek,
+        # Infermatic, AI21, Featherless, Mancer, Mancer 2, Lynn 2, Lynn
+        if 'provider_order' in kwargs or 'provider_allow_fallbacks' in kwargs:
+            payload['provider'] = {}
+            if 'provider_order' in kwargs:
+                payload['provider']['order'] = kwargs['provider_order']
+            if 'provider_allow_fallbacks' in kwargs:
+                payload['provider']['allow_fallbacks'] = kwargs['provider_allow_fallbacks']
 
         is_stream = kwargs.get('stream', False)
         if self.debug:
