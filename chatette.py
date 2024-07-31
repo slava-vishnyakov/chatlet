@@ -9,10 +9,10 @@ from dotenv import load_dotenv
 from model_pricing import get_model_pricing
 from fastcore.docments import docments
 
-class ChatetteError(Exception):
+class ChatletError(Exception):
     pass
 
-class Chatette:
+class Chatlet:
     _cancel_streaming: bool = False
 
     def __init__(self, model: str = "anthropic/claude-3.5-sonnet", system_prompt: str = None,
@@ -41,20 +41,20 @@ class Chatette:
     def get_rate_limits_and_credits(self):
         response = requests.get(f"{self.base_url}/auth/key", headers=self.headers)
         if response.status_code != 200:
-            raise ChatetteError(f"API request failed with status code {response.status_code}: {response.text}")
+            raise ChatletError(f"API request failed with status code {response.status_code}: {response.text}")
         return response.json()
 
     def get_token_limits(self):
         response = requests.get(f"{self.base_url}/models", headers=self.headers)
         if response.status_code != 200:
-            raise ChatetteError(f"API request failed with status code {response.status_code}: {response.text}")
+            raise ChatletError(f"API request failed with status code {response.status_code}: {response.text}")
         return response.json()
 
     def _get_api_key(self):
         load_dotenv()
         api_key = os.getenv('OPENROUTER_API_KEY')
         if not api_key:
-            raise ChatetteError("OPENROUTER_API_KEY not found in .env file or not provided as a parameter")
+            raise ChatletError("OPENROUTER_API_KEY not found in .env file or not provided as a parameter")
         return api_key
 
     def _create_tool(self, func: Callable):
@@ -174,10 +174,10 @@ class Chatette:
                 print(f"Received response from OpenRouter API: {response.text}\n----------------")
 
         if response.status_code == 502:
-            raise ChatetteError("OpenRouter API is currently unavailable. Please try again later.")
+            raise ChatletError("OpenRouter API is currently unavailable. Please try again later.")
 
         if response.status_code != 200:
-            raise ChatetteError(f"API request failed with status code {response.status_code}: {response.text}")
+            raise ChatletError(f"API request failed with status code {response.status_code}: {response.text}")
 
         if is_stream:
             return self._handle_streaming(response)
@@ -190,10 +190,10 @@ class Chatette:
                 for i in range(len(payload['tools'])):
                     if 'message' in inner_error and inner_error['message'].startswith(f'tools.{i}.input_schema: JSON schema is invalid'):
                         schema = payload['tools'][i]['function']
-                        raise ChatetteError(f"Incorrect schema for tool {schema['name']}: {schema['parameters']['properties']}")
+                        raise ChatletError(f"Incorrect schema for tool {schema['name']}: {schema['parameters']['properties']}")
 
 
-                raise ChatetteError(f"API request failed with error: {data['error']}")
+                raise ChatletError(f"API request failed with error: {data['error']}")
             self._update_token_count(data['usage'])
             message = data['choices'][0]['message']
             content = message['content']
@@ -296,7 +296,7 @@ class Chatette:
             elif line == ': OPENROUTER PROCESSING' or line == '':
                 continue
             else:
-                raise ChatetteError(f"Unexpected response from OpenRouter API: {line}")
+                raise ChatletError(f"Unexpected response from OpenRouter API: {line}")
 
     def cancel(self):
         print('cancel')

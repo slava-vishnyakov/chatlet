@@ -359,3 +359,42 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Acknowledgements
 
 Special thanks to the creators of [Claudette](https://claudette.answer.ai/) for the inspiration.
+# Chatette
+
+Chatette is a Python wrapper for the OpenRouter API, providing an easy-to-use interface for interacting with various AI models.
+
+## Installation
+
+You can install Chatette using pip:
+
+```
+pip install chatette
+```
+
+## Usage
+
+Here's a quick example of how to use Chatette:
+
+```python
+from chatette import Chatette
+
+# Initialize the Chatette client
+chat = Chatette(api_key="your_api_key_here")
+
+# Send a message and get a response
+response = chat("Hello, how are you?")
+print(response)
+```
+
+## Features
+
+- Easy-to-use interface for the OpenRouter API
+- Support for multiple AI models
+- Streaming responses
+- Tool usage
+- Image input support
+- Conversation history management
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

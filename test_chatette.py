@@ -3,7 +3,7 @@ import os
 import pytest
 import requests
 import responses
-from chatette import Chatette, ChatetteError
+from chatlet import Chatlet, ChatletError
 import base64
 import json
 from debug import print_user_message, print_assistant_message, print_system_message, print_token_usage, \
@@ -11,14 +11,14 @@ from debug import print_user_message, print_assistant_message, print_system_mess
 
 
 def test_init():
-    chat = Chatette()
+    chat = Chatlet()
     assert chat.model == "anthropic/claude-3.5-sonnet"
     
-    custom_chat = Chatette(model="openai/gpt-3.5-turbo")
+    custom_chat = Chatlet(model="openai/gpt-3.5-turbo")
     assert custom_chat.model == "openai/gpt-3.5-turbo"
 
 def test_get_rate_limits_and_credits():
-    chat = Chatette()
+    chat = Chatlet()
     response = chat.get_rate_limits_and_credits()
     print(response)
     assert 'data' in response
@@ -27,7 +27,7 @@ def test_get_rate_limits_and_credits():
     assert 'rate_limit' in response['data']
 
 def test_get_token_limits():
-    chat = Chatette()
+    chat = Chatlet()
     response = chat.get_token_limits()
     assert 'data' in response
     assert isinstance(response['data'], list)
@@ -40,7 +40,7 @@ def test_system_prompt():
     system_prompt = "You are a helpful assistant named Claude. Your favorite color is blue."
     print("\n", end="")
     print_system_message(system_prompt)
-    chat = Chatette(system_prompt=system_prompt)
+    chat = Chatlet(system_prompt=system_prompt)
     print_user_message("What's your name and favorite color?")
     response = chat("What's your name and favorite color?")
     print_assistant_message(response)
@@ -49,7 +49,7 @@ def test_system_prompt():
     assert "blue" in response.lower()
 
 def test_stream_response():
-    chat = Chatette()
+    chat = Chatlet()
     print("\n", end="")
     print_user_message("Tell me a story in 10 words.")
     stream = chat("Tell me a story in 10 words.", stream=True)
@@ -64,7 +64,7 @@ def test_stream_response():
     assert isinstance(chunks[0], str)
 
 def test_image_input():
-    chat = Chatette()
+    chat = Chatlet()
     image_filename = "test_image.jpg"
     if not os.path.exists(image_filename):
         data = requests.get("https://api-ninjas.com/images/cats/abyssinian.jpg").content
@@ -78,7 +78,7 @@ def test_image_input():
     print_token_usage(chat.total_tokens, chat.prompt_tokens, chat.completion_tokens)
 
 def test_estimate_pricing():
-    chat = Chatette()
+    chat = Chatlet()
     response = chat("Hello, how are you?")
     assert isinstance(response, str)
     print(f'\nEstimated cost: ${chat.total_usd:.6f}, last request: ${chat.last_request_usd:.6f}')
@@ -93,7 +93,7 @@ def test_tool_usage():
         """Get the current weather in a given location."""
         return {"temperature": 22, "unit": unit, "condition": "Sunny"}
 
-    chat = Chatette()
+    chat = Chatlet()
     response = chat("What's the weather like in location='New York City, NY'? Don't think, don't ask follow-up questions.", tools=[get_weather])
     assert 'New York' in response
     assert chat.tool_called == "get_weather"
@@ -107,30 +107,30 @@ def test_tool_usage():
     assert chat.tool_result is None
 
 def test_token_usage():
-    chat = Chatette()
+    chat = Chatlet()
     chat("Hello")
     assert chat.total_tokens > 0
     assert chat.prompt_tokens > 0
     assert chat.completion_tokens > 0
 
 def test_custom_headers():
-    chat = Chatette(http_referer="https://myapp.com", x_title="My Cool App")
+    chat = Chatlet(http_referer="https://myapp.com", x_title="My Cool App")
     response = chat("Hello")
     assert isinstance(response, str)
 
 def test_require_json():
-    chat = Chatette()
+    chat = Chatlet()
     response = chat("List three colors in JSON format", require_json=True)
     assert isinstance(response, dict)
     assert "colors" in response
 
 def test_error_handling():
-    chat = Chatette(model="nonexistent/model")
-    with pytest.raises(ChatetteError):
+    chat = Chatlet(model="nonexistent/model")
+    with pytest.raises(ChatletError):
         chat("This should fail")
 
 def test_stream_cancellation():
-    chat = Chatette()
+    chat = Chatlet()
     stream = chat("Tell me a story in 50 words.", stream=True)
     chunks = []
     for i, chunk in enumerate(stream):
@@ -143,7 +143,7 @@ def test_stream_cancellation():
 
 def test_url_context():
     url = "https://example.com/article"
-    chat = Chatette()
+    chat = Chatlet()
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(responses.GET, url, 
                  body="# Test Article\n\nThis is a test article content.",
@@ -162,7 +162,7 @@ def test_url_context():
         assert rsps.calls[0].request.url == url
 
 def test_temperature():
-    chat = Chatette()
+    chat = Chatlet()
     
     prompt = "Generate a random number between 1 and 10"
     response_low = chat(prompt, temperature=0.1)
@@ -171,14 +171,14 @@ def test_temperature():
     assert response_low != response_high
 
 def test_max_tokens():
-    chat = Chatette()
+    chat = Chatlet()
     short_response = chat("Tell me a story", max_tokens=10)
     long_response = chat("Tell me a story", max_tokens=100)
     
     assert len(short_response.split()) < len(long_response.split())
 
 def test_stop_sequence():
-    chat = Chatette()
+    chat = Chatlet()
     response = chat("Count from 1 to 10", stop=["5"])
     numbers = [int(s) for s in response.split() if s.isdigit()]
     assert max(numbers) <= 5
@@ -192,7 +192,7 @@ def test_tool_choice():
         """Get the current time in a given location."""
         return "Temperature is 22 degrees and the time is 12:00 PM"
 
-    chat = Chatette()
+    chat = Chatlet()
     #chat.debug = True
 
     chat("What's the weather in New York?", tool_choice="get_weather", tools=[get_weather, get_weather_and_time])
@@ -201,9 +201,9 @@ def test_tool_choice():
     assert chat.tool_result == {"temperature": 22, "condition": "Sunny"}
 
 def test_provider_order_and_fallbacks():
-    chat = Chatette()
+    chat = Chatlet()
     # expect this to fail because Anthropic is not in the provider_order
-    with pytest.raises(ChatetteError):
+    with pytest.raises(ChatletError):
         response = chat("Hello", provider_order=["OpenAI", "Together"], provider_allow_fallbacks=False)
 
     response = chat("Hello", provider_order=["OpenAI", "Anthropic"], provider_allow_fallbacks=False)
@@ -211,7 +211,7 @@ def test_provider_order_and_fallbacks():
     assert isinstance(response, str)
 
 def test_add_conversation_history():
-    chat = Chatette()
+    chat = Chatlet()
     chat.addUser("What's the capital of France?")
     chat.addAssistant("The capital of France is Paris.")
     chat.addUser("What's its population?")

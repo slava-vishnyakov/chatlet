@@ -27,4 +27,4 @@ jobs:
       env:
         OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       run: |
-        pytest test_chatette.py
+        pytest test_chatlet.py
