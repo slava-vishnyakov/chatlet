@@ -112,7 +112,6 @@ def test_custom_headers():
 def test_require_json():
     chat = Chatette()
     response = chat("List three colors in JSON format", require_json=True)
-    # require_json=True is equivalent to response_format={"type": "json_object"}
     assert isinstance(response, dict)
     assert "colors" in response
 

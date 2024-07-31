@@ -1,5 +1,6 @@
 import requests
 import json
+import re
 from typing import List, Dict, Union, Optional, Callable
 import base64
 import os
@@ -140,9 +141,9 @@ class Chatette:
         if 'provider_preferences' in kwargs:
             payload['provider'] = kwargs['provider_preferences']
 
-        # print(f"Sending request to OpenRouter API: {payload}")
+        print(f"Sending request to OpenRouter API: {payload}")
         response = requests.post(f"{self.base_url}/chat/completions", headers=self.headers, json=payload, stream=kwargs.get('stream', False))
-        # print(f"Received response from OpenRouter API: {response.text}")
+        print(f"Received response from OpenRouter API: {response.text}")
 
         if response.status_code == 502:
             raise ChatetteError("OpenRouter API is currently unavailable. Please try again later.")
@@ -166,7 +167,26 @@ class Chatette:
             if 'tool_calls' in message:
                 self._handle_tool_calls(message['tool_calls'], kwargs.get('tools', []))
 
-            return json.loads(content) if kwargs.get('require_json') else content
+            if kwargs.get('require_json'):
+                # Extract JSON content from the response
+                json_content = self._extract_json(content)
+                return json.loads(json_content)
+            else:
+                return content
+
+    def _extract_json(self, content: str) -> str:
+        # Find JSON content between triple backticks
+        json_match = re.search(r'```json\s*([\s\S]*?)\s*```', content)
+        if json_match:
+            return json_match.group(1)
+        
+        # If no JSON block found, try to find content between curly braces
+        json_match = re.search(r'\{[\s\S]*\}', content)
+        if json_match:
+            return json_match.group(0)
+        
+        # If still no JSON found, return the original content
+        return content
 
     def _handle_tool_calls(self, tool_calls, available_tools):
         for tool_call in tool_calls:
