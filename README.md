@@ -132,7 +132,7 @@ Streaming example:
 stream = chat("Tell me a story in 10 words.", stream=True)
 for chunk in stream:
     print(chunk, end='', flush=True)
-print()  # New line after streaming
+    # call `chat.cancel()` at any time to stop the streaming request
 ```
 
 And add some URLs:
