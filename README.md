@@ -1,13 +1,11 @@
-# Chatette
+# Chatlet
 
-Chatette is a powerful and flexible chatbot framework designed to work seamlessly with OpenRouter, supporting a wide
-range of models. Inspired by [Claudette](https://claudette.answer.ai/), Chatette aims to provide an easy-to-use
-interface for building and managing conversational AI applications.
+Chatlet is a powerful and flexible chatbot framework designed to work seamlessly with OpenRouter, supporting a wide
+range of models. Chatlet aims to provide an easy-to-use interface for building and managing conversational AI applications.
 
-## Why Chatette?
+## Why Chatlet?
 
-While Claudette is a great tool, it is specifically tailored for a particular use case (Anthropic's Claude). Chatette, on the other hand, is
-designed to be more versatile and can work with any model supported by OpenRouter. 
+Chatlet is designed to be versatile and can work with any model supported by OpenRouter.
 
 ## Features
 
@@ -19,11 +17,11 @@ designed to be more versatile and can work with any model supported by OpenRoute
 
 ### Installation
 
-To install Chatette, simply clone the repository and install the dependencies:
+To install Chatlet, simply clone the repository and install the dependencies:
 
 ```bash
-git clone https://github.com/yourusername/chatette.git
-cd chatette
+git clone https://github.com/slava-vishnyakov/chatlet.git
+cd chatlet
 pip install -r requirements.txt
 ```
 
@@ -32,10 +30,10 @@ pip install -r requirements.txt
 Here's a simple example to get you started:
 
 ```python
-from chatette import Chatette
+from chatlet import Chatlet
 
-# Initialize Chatette with the desired model
-chat = Chatette() 
+# Initialize Chatlet with the desired model
+chat = Chatlet() 
 ```
 
 This loads API key from OPENROUTER_API_KEY environment variable or .env file.
@@ -44,7 +42,7 @@ The default model is `anthropic/claude-3.5-sonnet`.
 Or, if you want to provide the model and API key directly:
 
 ```python
-chat = Chatette(model="anthropic/claude-3.5-sonnet", api_key="your_api_key_here")
+chat = Chatlet(model="anthropic/claude-3.5-sonnet", api_key="your_api_key_here")
 ```
 
 You can then send a message to the chatbot:
@@ -87,7 +85,7 @@ chat.conversation_history
     },
     {
         "role": "assistant",
-        "content": "My name is Chatette."
+        "content": "My name is Claude."
     }
 ]
 ```
@@ -116,7 +114,7 @@ Force a specific tool using `tool_choice`:
 chat("What's the weather like in New York City?", tools=[get_weather], tool_choice="get_weather")
 ```
 
-You can customize the behavior of Chatette by passing additional parameters:
+You can customize the behavior of Chatlet by passing additional parameters:
 
 ```python
 response = chat("Tell me a story", temperature=0.7, max_tokens=100)
@@ -143,14 +141,14 @@ chat("Summarize the article I provided", urls=["https://example.com/article"])
 
 ## Examples
 
-Here are some important examples of how to use Chatette:
+Here are some important examples of how to use Chatlet:
 
 ### Basic Usage
 
 ```python
-from chatette import Chatette
+from Chatlet import Chatlet
 
-chat = Chatette()
+chat = Chatlet()
 response = chat("Hello, how are you?")
 print(response)
 ```
@@ -158,7 +156,7 @@ print(response)
 ### Custom Model
 
 ```python
-custom_chat = Chatette(model="openai/gpt-3.5-turbo")
+custom_chat = Chatlet(model="openai/gpt-3.5-turbo")
 response = custom_chat("Tell me a joke")
 print(response)
 ```
@@ -167,7 +165,7 @@ print(response)
 
 ```python
 system_prompt = "You are a helpful assistant named Claude. Your favorite color is blue."
-chat = Chatette(system_prompt=system_prompt)
+chat = Chatlet(system_prompt=system_prompt)
 response = chat("What's your name and favorite color?")
 print(response)
 ```
@@ -175,7 +173,7 @@ print(response)
 ### Streaming Response
 
 ```python
-chat = Chatette()
+chat = Chatlet()
 stream = chat("Tell me a story in 10 words.", stream=True)
 for chunk in stream:
     print(chunk, end='', flush=True)
@@ -185,7 +183,7 @@ print()  # New line after streaming
 ### Image Input
 
 ```python
-chat = Chatette()
+chat = Chatlet()
 response = chat("What's in this image?", images=["path/to/image.jpg"])
 print(response)
 ```
@@ -197,7 +195,7 @@ def get_weather(location: str, unit: str = "celsius") -> dict:
     """Get the current weather in a given location."""
     return {"temperature": 22, "unit": unit, "condition": "Sunny"}
 
-chat = Chatette()
+chat = Chatlet()
 response = chat("What's the weather like in New York City?", tools=[get_weather])
 print(response)
 print(f"Tool called: {chat.tool_called}")
@@ -208,7 +206,7 @@ print(f"Tool result: {chat.tool_result}")
 ### Cost Estimation
 
 ```python
-chat = Chatette()
+chat = Chatlet()
 response = chat("Hello, how are you?")
 print(f'Estimated cost: ${chat.total_usd:.6f}, last request: ${chat.last_request_usd:.6f}')
 ```
@@ -216,7 +214,7 @@ print(f'Estimated cost: ${chat.total_usd:.6f}, last request: ${chat.last_request
 ### Custom Headers
 
 ```python
-chat = Chatette(http_referer="https://myapp.com", x_title="My Cool App")
+chat = Chatlet(http_referer="https://myapp.com", x_title="My Cool App")
 response = chat("Hello")
 print(response)
 ```
@@ -224,7 +222,7 @@ print(response)
 ### Requiring JSON Output
 
 ```python
-chat = Chatette()
+chat = Chatlet()
 response = chat("List three colors in JSON format", require_json=True)
 print(response)  # This will be a Python dictionary
 ```
@@ -232,7 +230,7 @@ print(response)  # This will be a Python dictionary
 ### URL Context
 
 ```python
-chat = Chatette()
+chat = Chatlet()
 response = chat("Summarize the article I provided", urls=["https://example.com/article"])
 print(response)
 ```
@@ -240,7 +238,7 @@ print(response)
 ### Temperature and Max Tokens
 
 ```python
-chat = Chatette()
+chat = Chatlet()
 response = chat("Tell me a story", temperature=0.7, max_tokens=100)
 print(response)
 ```
@@ -248,7 +246,7 @@ print(response)
 ### Adding Conversation History
 
 ```python
-chat = Chatette()
+chat = Chatlet()
 chat.add_user("What's the capital of France?")
 chat.add_assistant("The capital of France is Paris.")
 chat.add_user("What's its population?")
@@ -259,14 +257,14 @@ print(response)
 ### Specifying Provider Order and Fallbacks
 
 ```python
-chat = Chatette()
+chat = Chatlet()
 response = chat("Hello", provider_order=["OpenAI", "Anthropic"], provider_allow_fallbacks=False)
 print(response)
 ```
 
 ### Available Providers
 
-Chatette supports a wide range of AI providers through OpenRouter. As of the last update, the available providers include:
+Chatlet supports a wide range of AI providers through OpenRouter. As of the last update, the available providers include:
 
 1. OpenAI
 2. Anthropic
@@ -298,12 +296,12 @@ Chatette supports a wide range of AI providers through OpenRouter. As of the las
 
 Please note that the availability of providers may change over time. For the most up-to-date list, refer to the OpenRouter documentation.
 
-These examples showcase the versatility and power of Chatette. For more detailed information on each feature, please
+These examples showcase the versatility and power of Chatlet. For more detailed information on each feature, please
 refer to the API Reference section.
 
 ## API Reference
 
-### Chatette Class
+### Chatlet Class
 
 #### `__init__(self, model: str = "anthropic/claude-3.5-sonnet", system_prompt: str = None, http_referer: str = None, x_title: str = None, api_key: str = None)`
 
@@ -359,27 +357,19 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Acknowledgements
 
 Special thanks to the creators of [Claudette](https://claudette.answer.ai/) for the inspiration.
-# Chatette
+# Chatlet
 
-Chatette is a Python wrapper for the OpenRouter API, providing an easy-to-use interface for interacting with various AI models.
-
-## Installation
-
-You can install Chatette using pip:
-
-```
-pip install chatette
-```
+Chatlet is a Python wrapper for the OpenRouter API, providing an easy-to-use interface for interacting with various AI models.
 
 ## Usage
 
-Here's a quick example of how to use Chatette:
+Here's a quick example of how to use Chatlet:
 
 ```python
-from chatette import Chatette
+from chatlet import Chatlet
 
-# Initialize the Chatette client
-chat = Chatette(api_key="your_api_key_here")
+# Initialize the Chatlet client
+chat = Chatlet(api_key="your_api_key_here")
 
 # Send a message and get a response
 response = chat("Hello, how are you?")

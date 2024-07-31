@@ -1,7 +1,8 @@
 .aider*
 .idea
 .env
-test_image.jpg# Python
+test_image.jpg
+# Python
 __pycache__/
 *.py[cod]
 *.pyo
