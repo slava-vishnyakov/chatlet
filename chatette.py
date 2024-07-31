@@ -17,6 +17,7 @@ class Chatette:
 
     def __init__(self, model: str = "anthropic/claude-3.5-sonnet", system_prompt: str = None,
                  http_referer: str = None, x_title: str = None):
+        self.debug = False
         self.model = model
         self.system_prompt = system_prompt
         self.api_key = self._get_api_key()
@@ -64,7 +65,7 @@ class Chatette:
                 param_type = self._get_json_schema_type(param_info.anno)
                 tool['function']['parameters']['properties'][param_name] = {
                     "type": param_type,
-                    "description": param_info.docment
+                    "description": param_info.docment or ""
                 }
                 if param_info.default == inspect._empty:
                     tool['function']['parameters']['required'].append(param_name)
@@ -130,7 +131,9 @@ class Chatette:
         if kwargs.get('require_json'):
             payload["response_format"] = {"type": "json_object"}
         for param in ['temperature', 'max_tokens', 'stop', 'stream', 'tool_choice']:
-            if param in kwargs:
+            if param == 'tool_choice' and kwargs.get(param) is not None:
+                payload[param] = {'type': 'function', 'function': {'name': kwargs[param]}}
+            elif param in kwargs:
                 payload[param] = kwargs[param]
         if 'images' in kwargs:
             payload['messages'][-1]['content'] = self._prepare_image_content(message, kwargs['images'])
@@ -142,12 +145,14 @@ class Chatette:
             payload['provider'] = kwargs['provider_preferences']
 
         is_stream = kwargs.get('stream', False)
-        # print(f"Sending request to OpenRouter API [stream={is_stream}]: {payload}\n----------------")
+        if self.debug:
+            print(f"Sending request to OpenRouter API [stream={is_stream}]: {payload}\n----------------")
         response = requests.post(f"{self.base_url}/chat/completions", headers=self.headers, json=payload, stream=is_stream)
-        # if is_stream:
-        #     print(f"Receiving stream from OpenRouter API...\n----------------")
-        # else:
-        #     print(f"Received response from OpenRouter API: {response.text}\n----------------")
+        if self.debug:
+            if is_stream:
+                print(f"Receiving stream from OpenRouter API...\n----------------")
+            else:
+                print(f"Received response from OpenRouter API: {response.text}\n----------------")
 
         if response.status_code == 502:
             raise ChatetteError("OpenRouter API is currently unavailable. Please try again later.")
@@ -159,7 +164,16 @@ class Chatette:
             return self._handle_streaming(response)
         else:
             data = response.json()
-            if 'error' in data:
+            if 'error' in data and 'message' in data['error'] and data['error']['message'].startswith('{'):
+                inner_error = json.loads(data['error']['message'])['error']
+                # print(inner_error)
+                # inner_error = {'type': 'invalid_request_error', 'message': 'tools.0.input_schema: JSON schema is invalid - please consult https://json-schema.org or our documentation at https://docs.anthropic.com/en/docs/tool-use'}
+                for i in range(len(payload['tools'])):
+                    if 'message' in inner_error and inner_error['message'].startswith(f'tools.{i}.input_schema: JSON schema is invalid'):
+                        schema = payload['tools'][i]['function']
+                        raise ChatetteError(f"Incorrect schema for tool {schema['name']}: {schema['parameters']['properties']}")
+
+
                 raise ChatetteError(f"API request failed with error: {data['error']}")
             self._update_token_count(data['usage'])
             message = data['choices'][0]['message']

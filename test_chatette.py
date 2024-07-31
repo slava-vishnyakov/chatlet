@@ -179,18 +179,17 @@ def test_tool_choice():
         """Get the current weather in a given location."""
         return {"temperature": 22, "condition": "Sunny"}
 
-    def get_time(location: str) -> str:
+    def get_weather_and_time(location: str) -> str:
         """Get the current time in a given location."""
-        return "12:00 PM"
+        return "Temperature is 22 degrees and the time is 12:00 PM"
 
     chat = Chatette()
-    chat.add_tool(get_weather)
-    chat.add_tool(get_time)
+    #chat.debug = True
 
-    response = chat("What's the weather and time in New York?", tool_choice="get_weather")
-    assert "22" in response
-    assert "Sunny" in response
-    assert "12:00 PM" not in response
+    chat("What's the weather in New York?", tool_choice="get_weather", tools=[get_weather, get_weather_and_time])
+    assert chat.tool_called == "get_weather"
+    assert chat.tool_args == {"location": "New York"}
+    assert chat.tool_result == {"temperature": 22, "condition": "Sunny"}
 
 def test_provider_preferences():
     chat = Chatette()
