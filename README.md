@@ -10,10 +10,8 @@ Here's a quick example of how to use Chatlet:
 ```python
 from chatlet import Chatlet
 
-# Initialize the Chatlet client
-chat = Chatlet(api_key="your_api_key_here")
-
-# Send a message and get a response
+chat = Chatlet(api_key="Your-OpenRouter-API-key")
+# loads claude-3.5-sonnet by default
 
 chat("Hello, how are you?")
 # I'm doing well, thank you!
