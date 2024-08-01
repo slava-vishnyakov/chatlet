@@ -37,8 +37,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GH_PAT }}
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
+        git config --local user.email "bomboze@gmail.com"
+        git config --local user.name "Slava (auto)"
         git add setup.py __init__.py .github/workflows/publish-to-pypi.yml
         git commit -m "Bump version to ${{ github.event.inputs.new_version }}"
         git push
