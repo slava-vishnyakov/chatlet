@@ -7,9 +7,13 @@ permissions:
 on:
   workflow_dispatch:
     inputs:
-      new_version:
-        description: 'New version number (current: 0.1.0)'
+      bump:
+        description: 'Version bump type (minor or major)'
         required: true
+        type: choice
+        options:
+          - minor
+          - major
 
 jobs:
   deploy:
@@ -23,20 +27,25 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install build
-    - name: Show current version
+        pip install build semver
+    - name: Calculate new version
+      id: version
       run: |
         current_version=$(grep -oP "(?<=version=\")[^\"]+" setup.py)
         echo "Current version: $current_version"
+        if [ "${{ github.event.inputs.bump }}" == "minor" ]; then
+          new_version=$(python -c "import semver; print(semver.VersionInfo.parse('$current_version').bump_minor())")
+        else
+          new_version=$(python -c "import semver; print(semver.VersionInfo.parse('$current_version').bump_major())")
+        fi
+        echo "New version: $new_version"
+        echo "new_version=$new_version" >> $GITHUB_OUTPUT
     - name: Update version in setup.py
       run: |
-        sed -i 's/version="[^"]*"/version="${{ github.event.inputs.new_version }}"/' setup.py
+        sed -i 's/version="[^"]*"/version="${{ steps.version.outputs.new_version }}"/' setup.py
     - name: Update version in __init__.py
       run: |
-        sed -i 's/__version__ = "[^"]*"/__version__ = "${{ github.event.inputs.new_version }}"/' __init__.py
-    - name: Update version in publish-to-pypi.yml
-      run: |
-        sed -i 's/description: '"'"'New version number (current: [0-9.]*)/description: '"'"'New version number (current: ${{ github.event.inputs.new_version }})/' .github/workflows/publish-to-pypi.yml
+        sed -i 's/__version__ = "[^"]*"/__version__ = "${{ steps.version.outputs.new_version }}"/' __init__.py
     - name: Commit and push changes
       env:
         GITHUB_TOKEN: ${{ secrets.GH_PAT }}
@@ -44,8 +53,8 @@ jobs:
         git config --local user.email "bomboze@gmail.com"
         git config --local user.name "Slava (auto)"
         git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}
-        git add setup.py __init__.py .github/workflows/publish-to-pypi.yml
-        git commit -m "Bump version to ${{ github.event.inputs.new_version }}"
+        git add setup.py __init__.py
+        git commit -m "Bump version to ${{ steps.version.outputs.new_version }}"
         git push
     - name: Create Release
       id: create_release
@@ -53,8 +62,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GH_PAT }}
       with:
-        tag_name: v${{ github.event.inputs.new_version }}
-        release_name: Release ${{ github.event.inputs.new_version }}
+        tag_name: v${{ steps.version.outputs.new_version }}
+        release_name: Release ${{ steps.version.outputs.new_version }}
         draft: false
         prerelease: false
     - name: Build package
