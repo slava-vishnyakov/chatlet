@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "bump-patch": "bumpversion patch",
+    "publish-pip": "python -m build && twine upload dist/*"
+  }
+}

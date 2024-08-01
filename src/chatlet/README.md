@@ -44,12 +44,8 @@ Chatlet is designed to be versatile and can work with any model supported by Ope
 To install Chatlet, simply clone the repository and install the dependencies:
 
 ```bash
-git clone https://github.com/slava-vishnyakov/chatlet.git
-cd chatlet
-pip install -r requirements.txt
+pip install chatlet
 ```
-
-[!] pip coming soon
 
 ### Basic Usage
 
