@@ -4,8 +4,10 @@
 
 <table>
   <tr>
-    <td valign="center" style="text-align:center;">
-      <a href="https://slava-vishnyakov.github.io/chatlet/"><img src="docs/img.png" alt="Chatlet Demo" width="600"></a>
+    <td valign="center">
+      <p align="center">
+        <a href="https://slava-vishnyakov.github.io/chatlet/"><img src="docs/img.png" alt="Chatlet Demo" width="600"></a>
+      </p>
     </td>
   </tr>
 </table>
