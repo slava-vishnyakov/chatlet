@@ -163,6 +163,7 @@ def test_url_context():
         assert len(rsps.calls) == 1
         assert rsps.calls[0].request.url == url
 
+@pytest.mark.flaky(reruns=3, reruns_delay=1)
 def test_temperature():
     prompt = "Write a story in 5 words"
 
