@@ -1,6 +1,7 @@
 # Chatlet
 
-[![Run Tests](https://github.com/slava-vishnyakov/chatlet/actions/workflows/run-tests.yml/badge.svg)](https://github.com/slava-vishnyakov/chatlet/actions/workflows/run-tests.yml)
+Chatlet is a Python wrapper for the [OpenRouter API](https://openrouter.ai/), providing an easy-to-use interface for interacting with various AI models.
+Inspired by [Claudette](https://claudette.answer.ai/), which supports only Anthropic Claude.
 
 <table>
   <tr>
@@ -10,8 +11,7 @@
   </tr>
 </table>
 
-Chatlet is a Python wrapper for the [OpenRouter API](https://openrouter.ai/), providing an easy-to-use interface for interacting with various AI models.
-Inspired by [Claudette](https://claudette.answer.ai/), which supports only Anthropic Claude.
+[![Run Tests](https://github.com/slava-vishnyakov/chatlet/actions/workflows/run-tests.yml/badge.svg)](https://github.com/slava-vishnyakov/chatlet/actions/workflows/run-tests.yml)
 
 ## Usage
 
