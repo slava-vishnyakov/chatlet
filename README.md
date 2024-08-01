@@ -2,6 +2,8 @@
 
 [![Run Tests](https://github.com/slava-vishnyakov/chatlet/actions/workflows/run-tests.yml/badge.svg)](https://github.com/slava-vishnyakov/chatlet/actions/workflows/run-tests.yml)
 
+![Chatlet Demo](docs/img.png)
+
 Chatlet is a Python wrapper for the OpenRouter API, providing an easy-to-use interface for interacting with various AI models.
 Inspired by [Claudette](https://claudette.answer.ai/), which supports only Anthropic Claude.
 
@@ -213,8 +215,10 @@ print(response)
 ### Using Tools
 
 ```python
-def get_weather(location: str, unit: str = "celsius") -> dict:
-    """Get the current weather in a given location."""
+def get_weather(
+        location: str, # The location to get the weather for.
+        unit: str = "celsius" # The unit to return the temperature in.
+    ) -> dict: # Get the current weather in a given location.
     return {"temperature": 22, "unit": unit, "condition": "Sunny"}
 
 chat = Chatlet()

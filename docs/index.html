@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatlet Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .code-block {
+            background-color: #1e1e1e;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+        .code-block code {
+            color: #d4d4d4;
+        }
+        .python-keyword { color: #569cd6; }
+        .python-string { color: #ce9178; }
+        .python-function { color: #dcdcaa; }
+        .python-comment { color: #6a9955; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-3xl w-full mx-auto p-6 bg-white rounded-lg shadow-lg">
+        <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Chatlet Demo</h1>
+        <div class="space-y-6">
+            <!-- User message with code -->
+            <div class="flex justify-end mb-4">
+                <div class="max-w-[90%] text-white rounded-lg shadow-md">
+                    <div class="code-block">
+                        <code class="whitespace-pre"><span class="python-keyword">from</span> chatlet <span class="python-keyword">import</span> Chatlet
+
+chat = Chatlet(api_key=<span class="python-string">"Your-OpenRouter-API-key"</span>)
+chat(<span class="python-string">"Hello, how are you?"</span>)</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assistant response -->
+            <div class="flex justify-start mb-4">
+                <div class="max-w-[90%] bg-gray-200 text-gray-800 rounded-lg p-4 shadow-md">
+                    Hello! I'm doing well, thank you for asking. How can I assist you today?
+                </div>
+            </div>
+
+            <!-- User message -->
+            <div class="flex justify-end mb-4">
+                <div class="max-w-[90%] text-white rounded-lg shadow-md">
+                    <div class="code-block">
+                        <code>
+chat(<span class="python-string">"Who are you?"</span>)
+                        </code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assistant response -->
+            <div class="flex justify-start mb-4">
+                <div class="max-w-[90%] bg-gray-200 text-gray-800 rounded-lg p-4 shadow-md">
+                    I'm Claude 3.5 Sonnet served via OpenRouter API through the use of Chatlet library.
+                </div>
+            </div>
+
+            <!-- User message -->
+            <div class="flex justify-end mb-4">
+                <div class="max-w-[90%] text-white rounded-lg shadow-md">
+                    <div class="code-block">
+                        <code>
+chat(<span class="python-string">"What is Chatlet?"</span>)
+                        </code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assistant response -->
+            <div class="flex justify-start mb-4">
+                <div class="max-w-[90%] bg-gray-200 text-gray-800 rounded-lg p-4 shadow-md">
+                    Chatlet is a Python wrapper for the OpenRouter API, designed to provide an easy-to-use interface for interacting with various AI models. 
+                    It's inspired by <a href="https://claudette.answer.ai/" class="text-blue-500 underline">Claudette</a> but offers support for multiple AI models beyond just Anthropic's Claude.
+                </div>
+            </div>
+
+            <!-- User message -->
+            <div class="flex justify-end mb-4">
+                <div class="max-w-[90%] text-white rounded-lg shadow-md">
+                    <div class="code-block">
+                        <code>
+chat(<span class="python-string">"What can Chatlet do?"</span>)
+                        </code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assistant response -->
+            <div class="flex justify-start mb-4">
+                <div class="max-w-[90%] bg-gray-200 text-gray-800 rounded-lg p-4 shadow-md">
+                    Chatlet has many other capabilities. Here's a list of some key features:
+                    <ul class="list-disc pl-5 mt-2">
+                        <li>Support for multiple AI models</li>
+                        <li>Image input support</li>
+                        <li>Adding URLs to context</li>
+                        <li>Conversation history management</li>
+                        <li>Cost estimation</li>
+                        <li>Tool usage (function calling)</li>
+                        <li>Customizable parameters (temperature, max tokens, etc.)</li>
+                        <li>Requiring JSON output</li>
+                        <li>Custom headers support</li>
+                    </ul>
+                    <p class="mt-2">These features make Chatlet a versatile and powerful tool for interacting with AI models through the OpenRouter API.</p>
+                </div>
+            </div>
+
+            <!-- User message -->
+            <div class="flex justify-end mb-4">
+                <div class="max-w-[90%] text-white rounded-lg shadow-md">
+                    <div class="code-block">
+                        <code>
+chat(<span class="python-string">"Can it use tools?"</span>)
+                        </code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assistant response with code -->
+            <div class="flex justify-start mb-4">
+                <div class="max-w-[90%] bg-gray-200 text-gray-800 rounded-lg p-4 shadow-md">
+                    Yes, Chatlet supports tool usage. You can define functions as tools and pass them to Chatlet. Here's a quick example:
+                </div>
+            </div>
+
+            <!-- User message -->
+            <div class="flex justify-end mb-4">
+                <div class="max-w-[90%] text-white rounded-lg shadow-md">
+                    <div class="code-block">
+                        <code class="whitespace-pre"><span class="python-keyword">def</span> <span class="python-function">get_weather</span>(
+        location: str, <span class="python-comment"># The location to get the weather for</span>
+        unit: str = <span class="python-string">"celsius"</span> <span class="python-comment"># The unit to return the temperature in</span>
+    ) -> dict: <span class="python-comment"># Get the current weather in a given location</span>
+    <span class="python-keyword">return</span> {<span class="python-string">"temperature"</span>: <span class="python-number">22</span>, <span class="python-string">"unit"</span>: unit, <span class="python-string">"condition"</span>: <span class="python-string">"Sunny"</span>}
+
+<span class="python-comment"># Note: All comments are passed to the model via docments</span>
+
+chat = Chatlet()
+response = chat(<span class="python-string">"What's the weather like in New York City?"</span>, 
+                tools=[get_weather])
+</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assistant response -->
+            <div class="flex justify-start mb-4">
+                <div class="max-w-[90%] bg-gray-200 text-gray-800 rounded-lg p-4 shadow-md">
+                    (calling the tool...)
+                </div>
+            </div>
+
+            <!-- User message -->
+            <div class="flex justify-end mb-4">
+                <div class="max-w-[90%] text-white rounded-lg shadow-md">
+                    <div class="code-block">
+                        <code class="whitespace-pre"><span class="python-function">print</span>(chat.tool_called)</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assistant response -->
+            <div class="flex justify-start mb-4">
+                <div class="max-w-[90%] bg-gray-200 text-gray-800 rounded-lg p-4 shadow-md">
+                    get_weather
+                </div>
+            </div>
+
+            <!-- User message -->
+            <div class="flex justify-end mb-4">
+                <div class="max-w-[90%] text-white rounded-lg shadow-md">
+                    <div class="code-block">
+                        <code class="whitespace-pre"><span class="python-function">print</span>(chat.tool_args)</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assistant response -->
+            <div class="flex justify-start mb-4">
+                <div class="max-w-[90%] bg-gray-200 text-gray-800 rounded-lg p-4 shadow-md">
+                    {'location': 'New York City', 'unit': 'celsius'}
+                </div>
+            </div>
+
+            <!-- User message -->
+            <div class="flex justify-end mb-4">
+                <div class="max-w-[90%] text-white rounded-lg shadow-md">
+                    <div class="code-block">
+                        <code class="whitespace-pre"><span class="python-function">print</span>(chat.tool_result)</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assistant response -->
+            <div class="flex justify-start mb-4">
+                <div class="max-w-[90%] bg-gray-200 text-gray-800 rounded-lg p-4 shadow-md">
+                    {'temperature': 22, 'unit': 'celsius', 'condition': 'Sunny'}
+                </div>
+            </div>
+
+            <!-- User message -->
+            <div class="flex justify-end mb-4">
+                <div class="max-w-[90%] text-white rounded-lg shadow-md">
+                    <div class="code-block">
+                        <code class="whitespace-pre">chat(<span class="python-string">"Summarize"</span>)</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assistant response -->
+            <div class="flex justify-start mb-4">
+                <div class="max-w-[90%] bg-gray-200 text-gray-800 rounded-lg p-4 shadow-md">
+                    The weather in New York City is currently sunny with a temperature of 22°C (71.6°F).
+                </div>
+            </div>
+
+            <!-- User message -->
+            <div class="flex justify-end mb-4">
+                <div class="max-w-[90%] text-white rounded-lg shadow-md">
+                    <div class="code-block">
+                        <code>
+chat(<span class="python-string">"Can I add URLs to my request for additional context?"</span>)
+                        </code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assistant response -->
+            <div class="flex justify-start mb-4">
+                <div class="max-w-[90%] bg-gray-200 text-gray-800 rounded-lg p-4 shadow-md">
+                    Absolutely! Chatlet allows you to add URLs to your request for additional context. You can use the 'urls' parameter to provide web pages that the AI can reference. Here's an example of how you can do this:
+                    <div class="code-block my-2">
+                        <code class="whitespace-pre">chat(<span class="python-string">"Summarize the article I provided"</span>, 
+    urls=[<span class="python-string">"https://example.com/article"</span>
+])</code>
+                    </div>
+                    This feature is particularly useful when you want the AI to analyze or discuss specific online content.
+                </div>
+            </div>
+
+            <!-- User message -->
+            <div class="flex justify-end mb-4">
+                <div class="max-w-[90%] text-white rounded-lg shadow-md">
+                    <div class="code-block">
+                        <code>
+chat(<span class="python-string">"That's cool! Can Chatlet handle images?"</span>)
+                        </code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assistant response -->
+            <div class="flex justify-start mb-4">
+                <div class="max-w-[90%] bg-gray-200 text-gray-800 rounded-lg p-4 shadow-md">
+                    Absolutely! Chatlet supports image input. You can easily pass images to your conversation using the 'images' parameter.
+                </div>
+            </div>
+
+            <!-- User message -->
+            <div class="flex justify-end mb-4">
+                <div class="max-w-[90%] text-white rounded-lg shadow-md">
+                    <div class="code-block">
+                        <code class="whitespace-pre">chat(<span class="python-string">"What's in this image?"</span>, images=[<span class="python-string">"cat.jpg"</span>])</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assistant response -->
+            <div class="flex justify-start mb-4">
+                <div class="max-w-[90%] bg-gray-200 text-gray-800 rounded-lg p-4 shadow-md">
+                    Aww, how adorable! I see a cute kitty in the image. It looks like a fluffy tabby cat with big green eyes, sitting on a windowsill and gazing out at the world. What a purrfect picture!
+                </div>
+            </div>
+
+            <!-- User message -->
+            <div class="flex justify-end mb-4">
+                <div class="max-w-[90%] text-white rounded-lg shadow-md">
+                    <div class="code-block">
+                        <code>
+chat(<span class="python-string">"Does Chatlet support streaming responses?"</span>)
+                        </code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assistant response with code -->
+            <div class="flex justify-start mb-4">
+                <div class="max-w-[90%] bg-gray-200 text-gray-800 rounded-lg p-4 shadow-md">
+                    Yes, Chatlet supports streaming responses. Here's how you can use it:
+                    <div class="code-block mt-2">
+                        <code class="whitespace-pre">chat = Chatlet()
+stream = chat(<span class="python-string">"Tell me a story in 10 words."</span>, stream=<span class="python-keyword">True</span>)
+<span class="python-keyword">for</span> chunk <span class="python-keyword">in</span> stream:
+    <span class="python-function">print</span>(chunk, end=<span class="python-string">''</span>, flush=<span class="python-keyword">True</span>)
+    <span class="python-comment"># call `chat.cancel()` at any time to stop the streaming request</span></code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User message -->
+            <div class="flex justify-end mb-4">
+                <div class="max-w-[90%] text-white rounded-lg shadow-md">
+                    <div class="code-block">
+                        <code>
+chat(<span class="python-string">"Can I cancel the stream?"</span>)
+                        </code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assistant response -->
+            <div class="flex justify-start mb-4">
+                <div class="max-w-[90%] bg-gray-200 text-gray-800 rounded-lg p-4 shadow-md">
+                    Yes, you can cancel the stream! Here's how you can do it:
+                    <div class="code-block mt-2">
+                        <code class="whitespace-pre">chat = Chatlet()
+stream = chat(<span class="python-string">"Tell me a very long story."</span>, stream=<span class="python-keyword">True</span>)
+<span class="python-keyword">for</span> chunk <span class="python-keyword">in</span> stream:
+    <span class="python-function">print</span>(chunk, end=<span class="python-string">''</span>, flush=<span class="python-keyword">True</span>)
+    <span class="python-keyword">if</span> some_condition:  <span class="python-comment"># e.g., user input or time limit</span>
+        chat.cancel()
+        <span class="python-keyword">break</span></code>
+                    </div>
+                    <p class="mt-2">You can call <code>chat.cancel()</code> at any time to stop the streaming request. This allows you to interrupt the stream based on certain conditions, such as user input or a time limit.</p>
+                </div>
+            </div>
+
+            <!-- User message -->
+            <div class="flex justify-end mb-4">
+                <div class="max-w-[90%] text-white rounded-lg shadow-md">
+                    <div class="code-block">
+                        <code>
+chat(<span class="python-string">"Where are the docs?"</span>)
+                        </code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assistant response -->
+            <div class="flex justify-start mb-4">
+                <div class="max-w-[90%] bg-gray-200 text-gray-800 rounded-lg p-4 shadow-md">
+                    The documentation for Chatlet can be found on its GitHub repository. You can access it at:
+                    <a href="https://github.com/slava-vishnyakov/chatlet" class="text-blue-500 underline">https://github.com/slava-vishnyakov/chatlet</a>
+                    <p class="mt-2">This repository contains detailed information about Chatlet's features, usage examples, and installation instructions.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
