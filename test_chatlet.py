@@ -148,13 +148,13 @@ def test_url_context():
     chat = Chatlet()
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(responses.GET, url, 
-                 body="# Test Article\n\nThis is a test article content.",
+                 body="# title: Test Article\n\ncontent: This is a test article content.",
                  status=200,
                  content_type="text/html")
         
         rsps.add_passthru('https://')
         
-        response = chat("Summarize the article I provided", urls=[url])
+        response = chat("Write the title and exact content I provided above", urls=[url], temperature=0.0)
     
         assert "Test Article" in response.lower() or "test article" in response.lower()
         assert "content" in response.lower()
@@ -164,9 +164,9 @@ def test_url_context():
         assert rsps.calls[0].request.url == url
 
 def test_temperature():
-    prompt = "Generate a random number between 1 and 100."
+    prompt = "Write a story in 5 words"
 
-    model = "openai/gpt-4o-mini"
+    model = "openai/gpt-3.5-turbo"
     chat = Chatlet(model=model)
     response_low = chat(prompt, temperature=0.0)
 
