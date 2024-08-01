@@ -27,6 +27,9 @@ jobs:
     - name: Update version in setup.py
       run: |
         sed -i 's/version="[^"]*"/version="${{ github.event.inputs.new_version }}"/' setup.py
+    - name: Update version in __init__.py
+      run: |
+        sed -i 's/__version__ = "[^"]*"/__version__ = "${{ github.event.inputs.new_version }}"/' __init__.py
     - name: Update version in publish-to-pypi.yml
       run: |
         sed -i 's/description: '"'"'New version number (current: [0-9.]*)/description: '"'"'New version number (current: ${{ github.event.inputs.new_version }})/' .github/workflows/publish-to-pypi.yml
@@ -34,7 +37,7 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add setup.py .github/workflows/publish-to-pypi.yml
+        git add setup.py __init__.py .github/workflows/publish-to-pypi.yml
         git commit -m "Bump version to ${{ github.event.inputs.new_version }}"
         git push
     - name: Create Release
