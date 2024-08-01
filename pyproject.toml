@@ -9,7 +9,6 @@ authors = [
   { name="Slava Vishnyakov", email="bomboze@gmail.com" },
 ]
 description = "A Python wrapper for the OpenRouter API"
-long_description = "file: README.md"
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
