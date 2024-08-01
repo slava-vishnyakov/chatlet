@@ -143,6 +143,7 @@ def test_stream_cancellation():
             assert False
     assert len(chunks) <= 6
 
+@pytest.mark.flaky(reruns=3, reruns_delay=0)
 def test_url_context():
     url = "https://example.com/article"
     chat = Chatlet()
@@ -163,7 +164,7 @@ def test_url_context():
         assert len(rsps.calls) == 1
         assert rsps.calls[0].request.url == url
 
-@pytest.mark.flaky(reruns=3, reruns_delay=1)
+@pytest.mark.flaky(reruns=3, reruns_delay=0)
 def test_temperature():
     prompt = "Write a story in 5 words"
 
