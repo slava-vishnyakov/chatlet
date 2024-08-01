@@ -35,7 +35,7 @@ jobs:
         sed -i 's/description: '"'"'New version number (current: [0-9.]*)/description: '"'"'New version number (current: ${{ github.event.inputs.new_version }})/' .github/workflows/publish-to-pypi.yml
     - name: Commit and push changes
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GH_PAT }}
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
@@ -46,7 +46,7 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GH_PAT }}
       with:
         tag_name: v${{ github.event.inputs.new_version }}
         release_name: Release ${{ github.event.inputs.new_version }}
