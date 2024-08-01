@@ -4,7 +4,7 @@
 
 [![Chatlet Demo](docs/img.png)](https://slava-vishnyakov.github.io/chatlet/)
 
-Chatlet is a Python wrapper for the OpenRouter API, providing an easy-to-use interface for interacting with various AI models.
+Chatlet is a Python wrapper for the [OpenRouter API](https://openrouter.ai/), providing an easy-to-use interface for interacting with various AI models.
 Inspired by [Claudette](https://claudette.answer.ai/), which supports only Anthropic Claude.
 
 ## Usage
