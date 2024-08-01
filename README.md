@@ -2,15 +2,9 @@
 
 [![Run Tests](https://github.com/slava-vishnyakov/chatlet/actions/workflows/run-tests.yml/badge.svg)](https://github.com/slava-vishnyakov/chatlet/actions/workflows/run-tests.yml)
 
-<table>
-  <tr>
-    <td valign="center">
-      <p align="center">
-        <a href="https://slava-vishnyakov.github.io/chatlet/"><img src="docs/img.png" alt="Chatlet Demo" width="600"></a>
-      </p>
-    </td>
-  </tr>
-</table>
+<p align="center">
+    <a href="https://slava-vishnyakov.github.io/chatlet/"><img src="docs/img.png" alt="Chatlet Demo" width="600"></a>
+</p>
 
 Chatlet is a Python wrapper for the [OpenRouter API](https://openrouter.ai/), providing an easy-to-use interface for interacting with various AI models.
 Inspired by [Claudette](https://claudette.answer.ai/), which supports only Anthropic Claude.
