@@ -1,14 +1,14 @@
+import atexit
 import os
 import re
 
 import pytest
 import requests
 import responses
+
 from .chatlet import Chatlet, ChatletError
-import base64
-import json
 from .debug import print_user_message, print_assistant_message, print_system_message, print_token_usage, \
-    print_streaming_token, print_new_line
+    print_streaming_token
 
 Chatlet.DEFAULT_MODEL = "openai/gpt-4o-mini"
 
@@ -22,7 +22,7 @@ def test_init():
 def test_get_rate_limits_and_credits():
     chat = Chatlet()
     response = chat.get_rate_limits_and_credits()
-    print(response)
+    #print(response)
     assert 'data' in response
     assert 'usage' in response['data']
     assert 'limit' in response['data']
@@ -40,28 +40,28 @@ def test_get_token_limits():
 
 def test_system_prompt():
     system_prompt = "You are a helpful assistant named Claude. Your favorite color is blue."
-    print("\n", end="")
-    print_system_message(system_prompt)
+    # print("\n", end="")
+    # print_system_message(system_prompt)
     chat = Chatlet(system_prompt=system_prompt)
-    print_user_message("What's your name and favorite color?")
+    # print_user_message("What's your name and favorite color?")
     response = chat("What's your name and favorite color?")
-    print_assistant_message(response)
-    print_token_usage(chat.total_tokens, chat.prompt_tokens, chat.completion_tokens)
+    # print_assistant_message(response)
+    # print_token_usage(chat.total_tokens, chat.prompt_tokens, chat.completion_tokens)
     assert "Claude" in response
     assert "blue" in response.lower()
 
 def test_stream_response():
     chat = Chatlet()
-    print("\n", end="")
-    print_user_message("Tell me a story in 10 words.")
+    #print("\n", end="")
+    #print_user_message("Tell me a story in 10 words.")
     stream = chat("Tell me a story in 10 words.", stream=True)
     chunks = []
     for chunk in stream:
-        print_streaming_token(chunk)
+        #print_streaming_token(chunk)
         chunks.append(chunk)
-    print()  # New line after streaming
-    print("\n", end="")
-    print_token_usage(chat.total_tokens, chat.prompt_tokens, chat.completion_tokens)
+    #print()  # New line after streaming
+    #print("\n", end="")
+    #print_token_usage(chat.total_tokens, chat.prompt_tokens, chat.completion_tokens)
     assert len(chunks) > 1
     assert isinstance(chunks[0], str)
 
@@ -77,13 +77,13 @@ def test_image_input():
     assert isinstance(response, str)
     assert len(response) > 0
     assert "cat" in response.lower()
-    print_token_usage(chat.total_tokens, chat.prompt_tokens, chat.completion_tokens)
+    # print_token_usage(chat.total_tokens, chat.prompt_tokens, chat.completion_tokens)
 
 def test_estimate_pricing():
     chat = Chatlet()
     response = chat("Hello, how are you?")
     assert isinstance(response, str)
-    print(f'\nEstimated cost: ${chat.total_usd:.6f}, last request: ${chat.last_request_usd:.6f}')
+    #print(f'\nEstimated cost: ${chat.total_usd:.6f}, last request: ${chat.last_request_usd:.6f}')
     assert chat.total_usd > 0
     assert chat.last_request_usd > 0
 
@@ -228,6 +228,12 @@ def test_add_conversation_history():
     assert "France" in response
     assert "Paris" in response
     assert "population" in response
+
+# at exit, print total cost
+def print_total_cost():
+    print(f"Total cost: ${Chatlet.total_usd_sum:.4f}")
+
+atexit.register(print_total_cost)
 
 if __name__ == "__main__":
     pytest.main()

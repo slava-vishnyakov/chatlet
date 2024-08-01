@@ -12,7 +12,28 @@ from fastcore.docments import docments
 class ChatletError(Exception):
     pass
 
-class Chatlet:
+class MetaChatlet(type):
+    _default_model = "anthropic/claude-3.5-sonnet"
+    _total_usd_sum = 0.0
+
+    @property
+    def DEFAULT_MODEL(cls):
+        return cls._default_model
+
+    @DEFAULT_MODEL.setter
+    def DEFAULT_MODEL(cls, value):
+        cls._default_model = value
+
+    @property
+    def total_usd_sum(cls):
+        return cls._total_usd_sum
+
+    @total_usd_sum.setter
+    def total_usd_sum(cls, value):
+        cls._total_usd_sum = value
+
+
+class Chatlet(metaclass=MetaChatlet):
 
     _cancel_streaming: bool = False
 
@@ -283,6 +304,8 @@ class Chatlet:
         self.last_request_usd = input_cost + output_cost + image_cost
         self.total_usd += self.last_request_usd
 
+        __class__.total_usd_sum += self.last_request_usd
+
     def _handle_streaming(self, response):
         self._cancel_streaming = False
         for line in response.iter_lines():
@@ -301,7 +324,4 @@ class Chatlet:
                 raise ChatletError(f"Unexpected response from OpenRouter API: {line}")
 
     def cancel(self):
-        print('cancel')
         self._cancel_streaming = True
-
-Chatlet.DEFAULT_MODEL = "anthropic/claude-3.5-sonnet"
