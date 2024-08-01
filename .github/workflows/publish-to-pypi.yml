@@ -39,6 +39,7 @@ jobs:
       run: |
         git config --local user.email "bomboze@gmail.com"
         git config --local user.name "Slava (auto)"
+        git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/slava-vishnyakov/chatlet.git
         git add setup.py __init__.py .github/workflows/publish-to-pypi.yml
         git commit -m "Bump version to ${{ github.event.inputs.new_version }}"
         git push
