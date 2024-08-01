@@ -28,6 +28,7 @@
         .python-string { color: #ce9178; }
         .python-function { color: #dcdcaa; }
         .python-comment { color: #6a9955; }
+        .python-comment a { color: #8be661; text-decoration: underline; }
         
         /* Dark mode styles */
         .dark body {
@@ -163,7 +164,7 @@ chat(<span class="python-string">"Can it use tools?"</span>)
     ) -> dict: <span class="python-comment"># Get the current weather in a given location</span>
     <span class="python-keyword">return</span> {<span class="python-string">"temperature"</span>: <span class="python-number">22</span>, <span class="python-string">"unit"</span>: unit, <span class="python-string">"condition"</span>: <span class="python-string">"Sunny"</span>}
 
-<span class="python-comment"># Note: All comments are passed to the model via <a href="https://fastcore.fast.ai/docments.html#docments" class="text-blue-500 underline" target="_blank">docments</a></span>
+<span class="python-comment"># Note: All comments are passed to the model via <a href="https://fastcore.fast.ai/docments.html#docments" target="_blank">docments</a></span>
 
 chat = Chatlet()
 response = chat(<span class="python-string">"What's the weather like in New York City?"</span>, 
