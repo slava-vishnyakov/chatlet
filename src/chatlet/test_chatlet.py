@@ -6,8 +6,8 @@ import pytest
 import requests
 import responses
 
-from .chatlet import Chatlet, ChatletError
-from .debug import print_user_message, print_assistant_message, print_system_message, print_token_usage, \
+from chatlet import Chatlet, ChatletError
+from chatlet.debug import print_user_message, print_assistant_message, print_system_message, print_token_usage, \
     print_streaming_token
 
 Chatlet.DEFAULT_MODEL = "openai/gpt-4o-mini"
