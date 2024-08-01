@@ -6,7 +6,7 @@ import base64
 import os
 import inspect
 from dotenv import load_dotenv
-from model_pricing import get_model_pricing
+from .model_pricing import get_model_pricing
 from fastcore.docments import docments
 
 class ChatletError(Exception):
