@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatlet Demo</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Check if user prefers dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
     <style>
         .code-block {
             background-color: #1e1e1e;
@@ -23,10 +28,25 @@
         .python-string { color: #ce9178; }
         .python-function { color: #dcdcaa; }
         .python-comment { color: #6a9955; }
+        
+        /* Dark mode styles */
+        .dark body {
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        .dark .bg-white {
+            background-color: #2d3748;
+        }
+        .dark .text-gray-800 {
+            color: #e2e8f0;
+        }
+        .dark .bg-gray-200 {
+            background-color: #4a5568;
+        }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-3xl w-full mx-auto p-6 bg-white rounded-lg shadow-lg">
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-0">
+    <div class="max-w-3xl w-full mx-auto p-6 bg-white shadow-lg">
         <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Chatlet Demo</h1>
         <div class="space-y-6">
             <!-- User message with code -->
