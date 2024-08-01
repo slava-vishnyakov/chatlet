@@ -13,12 +13,13 @@ class ChatletError(Exception):
     pass
 
 class Chatlet:
+
     _cancel_streaming: bool = False
 
-    def __init__(self, model: str = "anthropic/claude-3.5-sonnet", system_prompt: str = None,
+    def __init__(self, model: str = None, system_prompt: str = None,
                  http_referer: str = None, x_title: str = None, api_key: str = None):
+        self.model = model if model else __class__.DEFAULT_MODEL
         self.debug = False
-        self.model = model
         self.system_prompt = system_prompt
         self.api_key = api_key if api_key else self._get_api_key()
         self.base_url = "https://openrouter.ai/api/v1"
@@ -131,7 +132,7 @@ class Chatlet:
         return messages
 
     def __call__(self, message: str, **kwargs):
-        self.addUser(message)
+        self.add_user(message)
         messages = self._prepare_messages()
 
         payload = {
@@ -239,7 +240,7 @@ class Chatlet:
                     self.tool_result = None
                     print(f"Warning: Tool '{self.tool_called}' was called but not found in the provided tools.")
 
-                self.addToolUse(self.tool_called, self.tool_args, self.tool_result)
+                self.add_tool_use(self.tool_called, self.tool_args, self.tool_result)
 
     def _prepare_image_content(self, message: str, image_files: List[str]) -> List[Dict]:
         content = [{"type": "text", "text": message}]
@@ -272,6 +273,7 @@ class Chatlet:
 
     def _estimate_price(self):
         pricing = get_model_pricing(self.model)
+        # print(pricing, self.model)
 
         input_cost = self.prompt_tokens * pricing['input_price_per_token']
         output_cost = self.completion_tokens * pricing['output_price_per_token']
@@ -301,3 +303,5 @@ class Chatlet:
     def cancel(self):
         print('cancel')
         self._cancel_streaming = True
+
+Chatlet.DEFAULT_MODEL = "anthropic/claude-3.5-sonnet"

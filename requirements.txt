@@ -1,5 +1,6 @@
 requests
 responses
-pytest
+pytest-xdist
 python-dotenv
 fastcore
+colorama
