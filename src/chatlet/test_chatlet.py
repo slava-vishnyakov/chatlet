@@ -143,7 +143,7 @@ def test_stream_cancellation():
             assert False
     assert len(chunks) <= 6
 
-@pytest.mark.flaky(reruns=3, reruns_delay=0)
+@pytest.mark.flaky(reruns=5, reruns_delay=0)
 def test_url_context():
     url = "https://example.com/article"
     chat = Chatlet()
@@ -155,7 +155,7 @@ def test_url_context():
         
         rsps.add_passthru('https://')
         
-        response = chat("Write the title and exact content I provided from text above", urls=[url], temperature=0.0)
+        response = chat("Write the title and exact content I provided from text above (no need to go to internet! just copy the text)", urls=[url], temperature=0.0)
     
         assert "Test Article" in response.lower() or "test article" in response.lower()
         assert "content" in response.lower()
