@@ -1,5 +1,41 @@
 MODEL_PRICING = {}
 
+MODEL_PRICING["meta-llama/llama-3.1-405b"] = {
+    "input_price_per_token": 0.000002,
+    "output_price_per_token": 0.000002,
+    "image_price_per_thousand": 0,
+}
+
+MODEL_PRICING["01-ai/yi-vision"] = {
+    "input_price_per_token": 0.00000019,
+    "output_price_per_token": 0.00000019,
+    "image_price_per_thousand": 0,
+}
+
+MODEL_PRICING["01-ai/yi-large-fc"] = {
+    "input_price_per_token": 0.000003,
+    "output_price_per_token": 0.000003,
+    "image_price_per_thousand": 0,
+}
+
+MODEL_PRICING["01-ai/yi-large-turbo"] = {
+    "input_price_per_token": 0.00000019,
+    "output_price_per_token": 0.00000019,
+    "image_price_per_thousand": 0,
+}
+
+MODEL_PRICING["nothingiisreal/mn-celeste-12b"] = {
+    "input_price_per_token": 0.0000015,
+    "output_price_per_token": 0.0000015,
+    "image_price_per_thousand": 0,
+}
+
+MODEL_PRICING["google/gemini-pro-1.5-exp"] = {
+    "input_price_per_token": 0.0000025,
+    "output_price_per_token": 0.0000075,
+    "image_price_per_thousand": 0.00265,
+}
+
 MODEL_PRICING["perplexity/llama-3.1-sonar-large-128k-online"] = {
     "input_price_per_token": 0.000001,
     "output_price_per_token": 0.000001,
@@ -129,6 +165,12 @@ MODEL_PRICING["sao10k/l3-stheno-8b"] = {
 MODEL_PRICING["ai21/jamba-instruct"] = {
     "input_price_per_token": 0.0000005,
     "output_price_per_token": 0.0000007,
+    "image_price_per_thousand": 0,
+}
+
+MODEL_PRICING["01-ai/yi-large"] = {
+    "input_price_per_token": 0.000003,
+    "output_price_per_token": 0.000003,
     "image_price_per_thousand": 0,
 }
 
@@ -1068,3 +1110,11 @@ MODEL_PRICING["openai/gpt-3.5-turbo"] = {
     "image_price_per_thousand": 0,
 }
 
+# ADD PRICING ABOVE THIS LINE, KEEP THIS LINE
+
+def get_model_pricing(model: str):
+    return MODEL_PRICING.get(model, {
+        "input_price_per_token": 0,
+        "output_price_per_token": 0,
+        "image_price_per_thousand": 0,
+    })

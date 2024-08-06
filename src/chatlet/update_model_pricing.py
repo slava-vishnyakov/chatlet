@@ -25,6 +25,15 @@ def main():
                 file.write(f'    "image_price_per_thousand": {pricing["image"]},\n')
                 file.write('}\n\n')
 
+            file.write("# ADD PRICING ABOVE THIS LINE, KEEP THIS LINE\n\n")
+            file.write("")
+            file.write("def get_model_pricing(model: str):\n")
+            file.write("    return MODEL_PRICING.get(model, {\n")
+            file.write("        \"input_price_per_token\": 0,\n")
+            file.write("        \"output_price_per_token\": 0,\n")
+            file.write("        \"image_price_per_thousand\": 0,\n")
+            file.write("    })\n")
+
         print("Model pricing information has been written to model_pricing.py")
     else:
         print(f"Failed to retrieve data. Status code: {response.status_code}")

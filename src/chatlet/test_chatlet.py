@@ -155,7 +155,7 @@ def test_url_context():
         
         rsps.add_passthru('https://')
         
-        response = chat("Write the title and exact content I provided above", urls=[url], temperature=0.0)
+        response = chat("Write the title and exact content I provided from text above", urls=[url], temperature=0.0)
     
         assert "Test Article" in response.lower() or "test article" in response.lower()
         assert "content" in response.lower()
