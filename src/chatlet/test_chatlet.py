@@ -146,7 +146,7 @@ def test_stream_cancellation():
 @pytest.mark.flaky(reruns=5, reruns_delay=0)
 def test_url_context():
     url = "https://example.com/article"
-    chat = Chatlet()
+    chat = Chatlet(model="anthropic/claude-3-haiku")
     with responses.RequestsMock(assert_all_requests_are_fired=False) as rsps:
         rsps.add(responses.GET, url, 
                  body="# title: Test Article\n\ncontent: This is a test article content.",
@@ -155,7 +155,7 @@ def test_url_context():
         
         rsps.add_passthru('https://')
         
-        response = chat("Write the title and exact content I provided from text above (no need to go to internet! just copy the text)", urls=[url], temperature=0.0)
+        response = chat("Write the title and exact content I provided from text above", urls=[url], temperature=0.0)
     
         assert "Test Article" in response.lower() or "test article" in response.lower()
         assert "content" in response.lower()
