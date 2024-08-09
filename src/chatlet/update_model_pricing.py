@@ -1,3 +1,5 @@
+import re
+
 import requests
 
 def main():
@@ -18,8 +20,10 @@ def main():
                 model_id = model["id"]
                 pricing = model["pricing"]
 
+                const_name = f"MODEL_{re.sub(r'[^a-zA-Z0-9_]', '_', model_id.upper())}"
 
-                file.write(f'MODEL_PRICING["{model_id}"] = {{\n')
+                file.write(f'{const_name} = "{model_id}"\n')
+                file.write(f'MODEL_PRICING[{const_name}] = {{\n')
                 file.write(f'    "input_price_per_token": {pricing["prompt"]},\n')
                 file.write(f'    "output_price_per_token": {pricing["completion"]},\n')
                 file.write(f'    "image_price_per_thousand": {pricing["image"]},\n')
