@@ -16,7 +16,7 @@ def main():
             file.write("MODEL_PRICING = {}\n\n")
 
 
-            for model in data["data"]:
+            for model in sorted(data["data"], key=lambda x: x["id"]):
                 model_id = model["id"]
                 pricing = model["pricing"]
 
